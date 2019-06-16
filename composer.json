@@ -1,0 +1,27 @@
+{
+    "name": "cruzer/dolphin",
+    "type": "library",
+    "description": "Dolphin ORM with Eloquent like syntax but very small footprint",
+    "keywords": [
+        "dolphin",
+        "orm",
+        "query builder",
+        "php"
+    ],
+    "homepage": "https://github.com/CruzerSoftwares/dolphin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "RN Kushwaha",
+            "email": "rn.kushwaha022@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dolphin\\": "src/"
+        }
+    }
+}
