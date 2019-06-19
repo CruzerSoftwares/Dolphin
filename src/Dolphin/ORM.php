@@ -1,7 +1,16 @@
 <?php
+/**
+ * The Query builder Mapper API.
+ *
+ * @author RN Kushwaha <rn.kushwaha022@gmail.com>
+ *
+ * @since v0.0.3 <Date: 19th June, 2019>
+ */
+namespace Dolphin\Mapper;
 
-namespace Dolphin\ORM;
-
+/**
+ * This is base class to extend the Dolphin features
+ */
 class ORM
 {
     public static $class = null;

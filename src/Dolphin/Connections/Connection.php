@@ -7,7 +7,7 @@
  * @since v0.0.2 <Date: 29th April, 2019>
  */
 
-namespace Dolphin\ORM\Connections;
+namespace Dolphin\Connections;
 
 use App\Config\Credentials;
 

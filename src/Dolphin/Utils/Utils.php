@@ -7,7 +7,7 @@
  * @since v0.0.5 <Date: 9th May, 2019>
  */
 
-namespace Dolphin\ORM\Utils;
+namespace Dolphin\Utils;
 
 class Utils
 {

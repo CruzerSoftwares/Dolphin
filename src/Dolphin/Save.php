@@ -7,11 +7,11 @@
  * @since v0.0.1 <Date: 12th April, 2019>
  */
 
-namespace Dolphin\ORM;
+namespace Dolphin\Mapper;
 
-use Dolphin\ORM\Builders\QueryBuilder;
-use Dolphin\ORM\Connections\Connection;
-use Dolphin\ORM\Utils\Utils;
+use Dolphin\Builders\QueryBuilder;
+use Dolphin\Connections\Connection;
+use Dolphin\Utils\Utils;
 use Exception;
 
 class Save extends Dolphin

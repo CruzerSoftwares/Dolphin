@@ -2,7 +2,7 @@
 
 /**
  * This class is provided for reference
- * Any application that want to use the CruzerORM must provide the
+ * Any application that want to use the Dolphin must provide the
  * Same functionality as this class provides e.g. Credentials::get('user').
  */
 

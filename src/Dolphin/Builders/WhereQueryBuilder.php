@@ -7,7 +7,7 @@
  * @since v0.0.1 <Date: 16th April, 2019>
  */
 
-namespace Dolphin\ORM\Builders;
+namespace Dolphin\Builders;
 
 /**
  * This class provides the mechanism to build the Where Queries.

@@ -7,14 +7,14 @@
  * @since v0.0.1 <Date: 12th April, 2019>
  */
 
-namespace Dolphin\ORM;
+namespace Dolphin\Mapper;
 
-use Dolphin\ORM\Connections\Connection;
-use Dolphin\ORM\Builders\QueryBuilder;
-use Dolphin\ORM\Builders\WhereQueryBuilder;
-use Dolphin\ORM\Builders\JoinQueryBuilder;
-use Dolphin\ORM\Builders\InsertQueryBuilder;
-use Dolphin\ORM\Utils\Utils;
+use Dolphin\Connections\Connection;
+use Dolphin\Builders\QueryBuilder;
+use Dolphin\Builders\WhereQueryBuilder;
+use Dolphin\Builders\JoinQueryBuilder;
+use Dolphin\Builders\InsertQueryBuilder;
+use Dolphin\Utils\Utils;
 use \Exception;
 
 /**

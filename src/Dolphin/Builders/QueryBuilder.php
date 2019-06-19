@@ -7,9 +7,9 @@
  * @since v0.0.1 <Date: 16th April, 2019>
  */
 
-namespace Dolphin\ORM\Builders;
+namespace Dolphin\Builders;
 
-use Dolphin\ORM\Connections\Connection;
+use Dolphin\Connections\Connection;
 
 /**
  * This class provides the mechanism to build the Queries.

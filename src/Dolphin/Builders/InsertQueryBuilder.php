@@ -7,9 +7,9 @@
  * @since v0.0.5 <Date: 09th May, 2019>
  */
 
-namespace Dolphin\ORM\Builders;
+namespace Dolphin\Builders;
 
-use Dolphin\ORM\Connections\Connection;
+use Dolphin\Connections\Connection;
 use Exception;
 
 /**

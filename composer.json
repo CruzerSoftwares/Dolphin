@@ -1,7 +1,7 @@
 {
     "name": "cruzer/dolphin",
     "type": "library",
-    "description": "Dolphin ORM with Eloquent like syntax but very small footprint",
+    "description": "Dolphin ORM and Query Builder with Eloquent like syntax but very small footprint",
     "keywords": [
         "dolphin",
         "orm",
@@ -10,12 +10,10 @@
     ],
     "homepage": "https://github.com/CruzerSoftwares/dolphin",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "RN Kushwaha",
-            "email": "rn.kushwaha022@gmail.com"
-        }
-    ],
+    "authors": [{
+        "name": "RN Kushwaha",
+        "email": "rn.kushwaha022@gmail.com"
+    }],
     "require": {
         "php": ">=7.2"
     },
