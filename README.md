@@ -1,13 +1,14 @@
 # Dolphin ORM & Query Builder
 
 [![Donate](https://img.shields.io/badge/donate-patreon-yellow.svg)](https://www.patreon.com/join/CruzerSoftwares)
-![PHP from Packagist](https://img.shields.io/packagist/php-v/cruzer/orm.svg)
-![Packagist Version](https://img.shields.io/packagist/v/cruzer/orm.svg)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/CruzerSoftwares/ORM/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/CruzerSoftwares/ORM/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/CruzerSoftwares/ORM/badges/build.png?b=master)](https://scrutinizer-ci.com/g/CruzerSoftwares/ORM/build-status/master)
-![Packagist](https://img.shields.io/packagist/dt/cruzer/orm.svg)
-[![Code Coverage](https://scrutinizer-ci.com/g/CruzerSoftwares/ORM/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/CruzerSoftwares/ORM/?branch=master)
-![GitHub](https://img.shields.io/github/license/CruzerSoftwares/ORM.svg?label=License)
+[![GitHub issues](https://img.shields.io/github/issues/CruzerSoftwares/Dolphin.svg)](https://github.com/CruzerSoftwares/Dolphin/issues)
+![PHP from Packagist](https://img.shields.io/packagist/php-v/cruzer/dolphin.svg)
+![Packagist Version](https://img.shields.io/packagist/v/cruzer/dolphin.svg)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/CruzerSoftwares/Dolphin/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/CruzerSoftwares/Dolphin/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/CruzerSoftwares/Dolphin/badges/build.png?b=master)](https://scrutinizer-ci.com/g/CruzerSoftwares/Dolphin/build-status/master)
+![Packagist](https://img.shields.io/packagist/dt/cruzer/dolphin.svg)
+[![Code Coverage](https://scrutinizer-ci.com/g/CruzerSoftwares/Dolphin/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/CruzerSoftwares/Dolphin/?branch=master)
+[![GitHub license](https://img.shields.io/github/license/CruzerSoftwares/Dolphin.svg)](https://github.com/CruzerSoftwares/Dolphin/blob/master/LICENSE)
 
 A lightweight Database Query builder and ORM for PHP 7 without any external dependency(only PDO is required).
 API looks quite same as of Laravel's Eloquent but without the complexity.

@@ -1,7 +1,7 @@
 {
     "name": "cruzer/dolphin",
     "type": "library",
-    "description": "Dolphin ORM and Query Builder with Eloquent like syntax but very small footprint",
+    "description": "Dolphin ORM and Query Builder with Laravel Eloquent like syntax but very small footprint",
     "keywords": [
         "dolphin",
         "orm",
