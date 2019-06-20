@@ -10,19 +10,15 @@ namespace App\Config;
 
 class Credentials
 {
-    public static $driver = 'mysql';
-    public static $db = 'chatter';
-    public static $user = 'root';
-    public static $password = 'admin123';
-    public static $prefix = 'czr_';
-    public static $charset = 'utf-8';
-
     public static function __callStatic($name, $arguments)
     {
+        $dbCredentials = require('database.php');
         $var = $arguments[0];
 
-        $c = new \ReflectionClass('\App\Config\Credentials');
+        if(array_key_exists($var, $dbCredentials)){
+            return $dbCredentials[$var];
+        }
 
-        return $c->getStaticPropertyValue($var);
+        throw new \Exception("The requested key $var not found!", 1);
     }
 }
