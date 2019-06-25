@@ -27,8 +27,8 @@ class Connection
     public static function get()
     {
         if (!self::$con) {
-            self::$con = new \PDO('mysql:host=localhost; dbname='.Credentials::get('db'),
-                                    Credentials::get('user'),
+            self::$con = new \PDO('mysql:host=localhost; dbname='.Credentials::get('database'),
+                                    Credentials::get('username'),
                                     Credentials::get('password')
                                 );
             self::$con->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
