@@ -4,7 +4,7 @@
  *
  * @author RN Kushwaha <rn.kushwaha022@gmail.com>
  *
- * @since v0.0.1 <Date: 12th April, 2019>
+ * @since v0.0.1
  */
 
 namespace Dolphin\Mapper;
@@ -70,6 +70,7 @@ class Dolphin
     protected $whereNotNull = array();
     protected $limit;
     protected $offset;
+    protected $results;
 
     /**
      * It returns the table name to Query from
@@ -346,17 +347,18 @@ class Dolphin
 
             if ($fetchRows == 'first') {
                 $rows = $stmt->fetch($fetch);
-
+                $this->results = $rows;
                 // now turn this stdClass object to the object type of calling model
                 $rows = $util->turnObject($this->tableName, $rows);
             } else {
                 $rows = $stmt->fetchAll($fetch);
+                $this->results = $rows;
             }
 
             // Reset class variables
             $this->reset();
 
-            return $rows;
+            return $this;
         } catch (\PDOException $ex) {
             throw new \PDOException($ex->getMessage(), 1);
         } catch (Exception $e) {
@@ -449,9 +451,14 @@ class Dolphin
         return $this->query($query, 'FETCH_OBJ', 'count');
     }
 
-    public function getAsArray()
+    public function asArray()
     {
-        return $this->prepare($this->buildQuery(), 'FETCH_ASSOC');
+        return json_decode(json_encode($this->results), true);
+    }
+
+    public function asJSON()
+    {
+        return json_encode($this->results);
     }
 
     /**
@@ -475,7 +482,6 @@ class Dolphin
 
         return true;
     }
-
 
     /**
      * It inserts the new rows
