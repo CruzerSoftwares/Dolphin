@@ -50,4 +50,24 @@ class Utils
         return $destination;
     }
     
+     /**
+     * Turn the stadClass object to the type of calling Model
+     *
+     * @param String $destination
+     * @param Object $sourceObject
+     * @return Object $destination
+     *
+     * @author RN Kushwaha <rn.kushwaha022@gmail.com>
+     * @since v0.0.5
+     */
+    public function turnObjects($destination, $data)
+    {
+        $destination = new $destination();
+        if(count($data)){
+            $destinationReflection = new \ReflectionObject($destination);
+            $destination->data = json_decode(json_encode($data, true));
+        }
+
+        return $destination;
+    }
 }

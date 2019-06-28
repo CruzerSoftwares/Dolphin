@@ -4,7 +4,7 @@
  *
  * @author RN Kushwaha <rn.kushwaha022@gmail.com>
  *
- * @since v0.0.1
+ * @since v0.0.1 <Date: 12th April, 2019>
  */
 
 namespace Dolphin\Mapper;
@@ -333,11 +333,10 @@ class Dolphin
         $this->offset = null;
     }
 
-    public function prepare($query, $fetchMode = 'FETCH_OBJ', $fetchRows = 'all')
+    public function prepare($query, $fetchRows = 'all')
     {
         $qb = new QueryBuilder();
         $wqb = new WhereQueryBuilder();
-        $fetch = $qb->fetchType($fetchMode);
         $util = new Utils();
         
         try {
@@ -346,19 +345,21 @@ class Dolphin
             $stmt->execute($ar);
 
             if ($fetchRows == 'first') {
-                $rows = $stmt->fetch($fetch);
+                $rows = $stmt->fetch(\PDO::FETCH_OBJ);
                 $this->results = $rows;
                 // now turn this stdClass object to the object type of calling model
                 $rows = $util->turnObject($this->tableName, $rows);
             } else {
-                $rows = $stmt->fetchAll($fetch);
+                // $rows = $stmt->fetchAll(\PDO::FETCH_CLASS, $this->tableName);
+                $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
                 $this->results = $rows;
+                $rows = $util->turnObjects($this->tableName, $rows);
             }
 
             // Reset class variables
             $this->reset();
 
-            return $this;
+            return $rows;
         } catch (\PDOException $ex) {
             throw new \PDOException($ex->getMessage(), 1);
         } catch (Exception $e) {
@@ -366,13 +367,12 @@ class Dolphin
         }
     }
 
-    public function query($query, $fetchMode = 'FETCH_OBJ', $fetchRows = 'all')
+    public function query($query, $fetchRows = 'all')
     {
         $qb = new QueryBuilder();
-        $fetch = $qb->fetchType($fetchMode);
 
         try {
-            $obj = Connection::get()->query($qb->queryPrefix($query), $fetch);
+            $obj = Connection::get()->query($qb->queryPrefix($query), \PDO::FETCH_OBJ);
 
             if ($fetchRows == 'count') {
                 $data = $obj->fetchColumn();
@@ -391,7 +391,7 @@ class Dolphin
 
     public function get()
     {
-        return $this->prepare($this->buildQuery(), 'FETCH_OBJ');
+        return $this->prepare($this->buildQuery());
     }
 
     public function first()
@@ -404,7 +404,7 @@ class Dolphin
             $query .= ' LIMIT 1';
         }
 
-        return $this->prepare($query, 'FETCH_OBJ', 'first');
+        return $this->prepare($query, 'first');
     }
 
     /**
@@ -448,17 +448,7 @@ class Dolphin
         $query = $this->buildQuery();
         $query = str_replace('SELECT * ', 'SELECT COUNT(*) as count ', $query);
 
-        return $this->query($query, 'FETCH_OBJ', 'count');
-    }
-
-    public function asArray()
-    {
-        return json_decode(json_encode($this->results), true);
-    }
-
-    public function asJSON()
-    {
-        return json_encode($this->results);
+        return $this->query($query, 'count');
     }
 
     /**
@@ -557,4 +547,5 @@ class Dolphin
 
         return true;
     }
+
 }
