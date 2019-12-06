@@ -64,7 +64,6 @@ class Utils
     {
         $destination = new $destination();
         if(count($data)){
-            $destinationReflection = new \ReflectionObject($destination);
             $destination->data = json_decode(json_encode($data, true));
         }
 

@@ -3,7 +3,6 @@
  * The Query builder API.
  *
  * @author RN Kushwaha <rn.kushwaha022@gmail.com>
- *
  * @since v0.0.1 <Date: 12th April, 2019>
  */
 
