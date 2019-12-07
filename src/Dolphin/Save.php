@@ -15,6 +15,40 @@ use Exception;
 
 class Save extends Dolphin
 {
+    private $qb;
+
+    public function __construct()
+    {
+        $this->qb = new QueryBuilder();
+    }
+
+    public function createQuery($row){
+        $ar = [];
+        if(isset($row) && isset($row->id) && $row->id > 0 ){
+            $query = "UPDATE ".$this->table()." SET ";
+            foreach($row as $key => $val){
+                $ar[':'.$key] = $val;
+                if($key == 'id') continue;
+                $query.= $this->qb->quote($key)." =:".$key.",";
+            }
+
+            $query = rtrim($query, ",");
+            $query.= " WHERE ".$this->qb->quote('id')."=:id";
+        } else{
+            $queryVal = '';
+            $query = "INSERT INTO ".$this->table()." (";
+            foreach($row as $key => $val){
+                $query.= $this->qb->quote($key).", ";
+                $ar[$key] = $val;
+                $queryVal.= ":".$key.", ";
+            }
+
+            $query = rtrim($query, ", ").") VALUES (".$queryVal.rtrim($query, ", ").") ";
+        }
+
+        return ['query' => $query, 'data' => $ar];
+    }
+
     /**
      * It saves the row by primary key [id]
      * Or inserts a new row if id is null
@@ -30,34 +64,12 @@ class Save extends Dolphin
         $qb = new QueryBuilder();
         $util = new Utils();
         $row = $util->turnObject($this->tableName, $object);
-        $ar = array();
 
-        // our object is set. Now we need to save it
-        $queryVal = '';
-        $query = "INSERT INTO ".$this->table()." (";
-        foreach($row as $key => $val){
-            $query.= $qb->quote($key).", ";
-            $ar[$key] = $val;
-            $queryVal.= ":".$key.", ";
-        }
-
-        $query = rtrim($query, ", ").") VALUES (".$queryVal.rtrim($query, ", ").") ";
-
-        if(isset($row) && isset($row->id) && $row->id > 0 ){
-            $query = "UPDATE ".$this->table()." SET ";
-            foreach($row as $key => $val){
-                $ar[':'.$key] = $val;
-                if($key == 'id') continue;
-                $query.= $qb->quote($key)." =:".$key.",";
-            }
-
-            $query = rtrim($query, ",");
-            $query.= " WHERE ".$qb->quote('id')."=:id";
-        }
+        list($query, $data) = $this->createQuery($row);
 
         try{
             $stmt = Connection::get()->prepare($qb->queryPrefix($query));
-            $stmt->execute($ar);
+            $stmt->execute($data);
         } catch(Exception $e){
             throw new Exception($e->getMessage());
         }
