@@ -2,6 +2,8 @@
 
 namespace Dolphin\Mapper;
 
+use Dolphin\Utils\Table;
+
 class ORM
 {
     public static $class = null;
@@ -19,7 +21,8 @@ class ORM
     {
         $calledClass = get_called_class();
         $object = self::getClass();
-        $object->tableName = $calledClass;
+        $object->table = (new Table())->getTable($calledClass);
+        $object->className = $calledClass;
 
         return $object->{$method}(...$parameters);
     }

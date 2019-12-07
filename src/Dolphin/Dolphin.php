@@ -55,8 +55,8 @@ use \Exception;
 class Dolphin
 {
     protected $fields = array();
-    protected $table;
-    public $tableName;
+    public $table;
+    public $className;
     protected $groupBy;
     protected $orderBy;
     protected $having;
@@ -72,32 +72,6 @@ class Dolphin
     protected $limit;
     protected $offset;
     protected $results;
-
-    /**
-     * It returns the table name to Query from
-     * Used internally
-     */
-    protected function table()
-    {
-        $class = $this->tableName;
-        $ref   = new \ReflectionClass($class);
-        $qb    = new QueryBuilder();
-        $util  = new Utils();
-
-        if ($ref->hasProperty('table')) {
-            $tableCheck = $ref->getProperty('table');
-            $tableCheck->setAccessible(true);
-            $tableName = $tableCheck->getValue(new $class());
-        } else {
-            $tableName = explode('\\', $class);
-            $tableName = $util->decamelize(end($tableName));
-        }
-
-        $prefix = $qb->getPrefix();
-        $this->table = $prefix.$tableName;
-
-        return $this->table;
-    }
 
     public function select()
     {
@@ -267,7 +241,7 @@ class Dolphin
     protected function buildQuery()
     {
         $query = array();
-        $tblWithPrefix = $this->table();
+        $tblWithPrefix = $this->table;
         $qb     = new QueryBuilder();
         $prefix = $qb->getPrefix();
         $tbl    = str_replace($prefix, '', $tblWithPrefix);
@@ -324,7 +298,7 @@ class Dolphin
     {
         $this->fields = array();
         $this->table = null;
-        $this->tableName = null;
+        $this->className = null;
         $this->groupBy = null;
         $this->orderBy = null;
         $this->having = null;
@@ -344,7 +318,6 @@ class Dolphin
     public function prepare($query, $fetchRows = 'all')
     {
         $qb = new QueryBuilder();
-        $wqb = new WhereQueryBuilder();
         $wqp = new WhereQueryParser();
         $util = new Utils();
         
@@ -357,12 +330,11 @@ class Dolphin
                 $rows = $stmt->fetch(\PDO::FETCH_OBJ);
                 $this->results = $rows;
                 // now turn this stdClass object to the object type of calling model
-                $rows = $util->turnObject($this->tableName, $rows);
+                $rows = $util->turnObject($this->className, $rows);
             } else {
-                // $rows = $stmt->fetchAll(\PDO::FETCH_CLASS, $this->tableName);
                 $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
                 $this->results = $rows;
-                $rows = $util->turnObjects($this->tableName, $rows);
+                $rows = $util->turnObjects($this->className, $rows);
             }
 
             // Reset class variables
@@ -471,7 +443,7 @@ class Dolphin
     public function truncate()
     {
         $qb = new QueryBuilder();
-        $query = "TRUNCATE ".$this->table();
+        $query = "TRUNCATE ".$this->table;
         
         try{
             Connection::get()->query($qb->queryPrefix($query));
@@ -494,7 +466,7 @@ class Dolphin
     public function insert($rows)
     {
         $iqb = new InsertQueryBuilder();
-        return $iqb->insert($rows, $this->table());
+        return $iqb->insert($rows, $this->table);
     }
 
     /**
@@ -509,7 +481,7 @@ class Dolphin
     public function update($row)
     {
         $qb = new QueryBuilder();
-        $query = "UPDATE ".$this->table()." SET ";
+        $query = "UPDATE ".$this->table." SET ";
         $ar = array();
         
         foreach($row as $key => $val){
@@ -543,7 +515,7 @@ class Dolphin
     public function delete()
     {
         $qb = new QueryBuilder();
-        $query = "DELETE FROM ".$this->table();
+        $query = "DELETE FROM ".$this->table;
         
         try{
             $whereQuery = $this->buildAllWhereQuery();
