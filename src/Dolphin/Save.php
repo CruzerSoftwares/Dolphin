@@ -44,17 +44,16 @@ class Save extends Dolphin
             $query = rtrim($query, ",");
             $query.= " WHERE ".$qb->quote('id')."=:id";
         } else{
+            $queryVal = '';
             $query = "INSERT INTO ".$this->table()." (";
             foreach($row as $key => $val){
                 $query.= $qb->quote($key).", ";
+                $ar[$key] = $val;
+                $queryVal.= ":".$key.", ";
             }
 
             $query = rtrim($query, ", ");
-            $query.= ") VALUES (";
-            foreach($row as $key => $val){
-                $ar[$key] = $val;
-                $query.= ":".$key.", ";
-            }
+            $query.= ") VALUES (".$queryVal;
             $query = rtrim($query, ", ");
             $query.=") ";
         }

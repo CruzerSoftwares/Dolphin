@@ -161,9 +161,16 @@ class Dolphin
         return $this;
     }
 
-    public function where($where, $params = null)
+    public function where()
     {
-        $this->where = array_merge($this->where, [[$where, $params]]);
+        $args = func_get_args();
+        if(func_num_args()===2){
+            $this->where = array_merge($this->where, [[$args[0], '=', $args[1]]]);
+        } elseif(func_num_args()===3){
+            $this->where = array_merge($this->where, [[$args[0], $args[1], $args[2]]]);
+        } else{
+            throw new Exception('Where parameter contains invalid number of parameters', 1);
+        }
 
         return $this;
     }

@@ -8,12 +8,17 @@
  */
 
 namespace Dolphin\Builders;
-
 /**
  * This class provides the mechanism to build the Where Queries.
  */
 class WhereQueryBuilder extends QueryBuilder
 {
+  private $qb;
+
+  public function __construct(){
+    $this->qb = new QueryBuilder();
+  }
+
     protected function prepareArrayForWhere($bindKey, $bindVal = null){
         $ar = $conditionAr = array();
         // expecting a string like 'status = :status'
@@ -25,14 +30,14 @@ class WhereQueryBuilder extends QueryBuilder
         if (is_array($conditionAr) && count($conditionAr)) {
             $ar[':'.$conditionAr[1]] = $bindVal;
         }
-        
+
         return $ar;
     }
-    
+
     public function parseWhereQuery($whereQuery = [])
     {
         $ar = array();
-        
+
         foreach ($whereQuery as $where) {
             if (is_array($where[1])) {
                 foreach ($where[1] as $key => $value) {
@@ -64,11 +69,15 @@ class WhereQueryBuilder extends QueryBuilder
             $this->whereAdded = true;
 
             foreach ($conditions as $where) {
+                $sign = '=';
+                if(count($where)==3) {
+                    $sign = $where[1];
+                }
                 if ($firstTime) {
-                    $query[] = $where[0];
+                    $query[] = $this->qb->quote($where[0]).' '.$sign.' '.end($where);
                     $firstTime = false;
                 } else {
-                    $query[] = 'AND '.$where[0];
+                    $query[] = 'AND '.$this->qb->quote($where[0]).' '.$sign.' '.end($where);
                 }
             }
         }
