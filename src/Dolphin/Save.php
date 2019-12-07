@@ -63,14 +63,13 @@ class Save extends Dolphin
      */
     public function save($object)
     {
-        $qb = new QueryBuilder();
         $util = new Utils();
         $row = $util->turnObject($this->tableName, $object);
 
         list($query, $data) = $this->createQuery($row);
 
         try{
-            $stmt = Connection::get()->prepare($qb->queryPrefix($query));
+            $stmt = Connection::get()->prepare($this->qb->queryPrefix($query));
             $stmt->execute($data);
         } catch(Exception $e){
             throw new Exception($e->getMessage());

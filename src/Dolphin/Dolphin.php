@@ -14,6 +14,7 @@ use Dolphin\Builders\QueryBuilder;
 use Dolphin\Builders\WhereQueryBuilder;
 use Dolphin\Builders\JoinQueryBuilder;
 use Dolphin\Builders\InsertQueryBuilder;
+use Dolphin\Parsers\WhereQueryParser;
 use Dolphin\Utils\Utils;
 use \Exception;
 
@@ -344,10 +345,11 @@ class Dolphin
     {
         $qb = new QueryBuilder();
         $wqb = new WhereQueryBuilder();
+        $wqp = new WhereQueryParser();
         $util = new Utils();
         
         try {
-            $ar = $wqb->parseWhereQuery($this->where);
+            $ar = $wqp->parseWhereQuery($this->where);
             $stmt = Connection::get()->prepare($qb->queryPrefix($query));
             $stmt->execute($ar);
 

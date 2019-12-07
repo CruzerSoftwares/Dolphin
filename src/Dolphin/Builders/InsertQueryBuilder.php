@@ -89,9 +89,8 @@ class InsertQueryBuilder extends QueryBuilder
         
         $query   = $this->buildInsert($table, $dataToBuild);
         $dataRet = $this->$methodToCall($rows);
-        $returnQuery = $dataRet['query'];
+        $query.= $dataRet['query'];
         $bindAr = $dataRet['array'];
-        $query.= $returnQuery;
         
         try{
             $stmt = $db->prepare($qb->queryPrefix($query));

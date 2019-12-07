@@ -3,82 +3,46 @@
  * The Query builder API.
  *
  * @author RN Kushwaha <rn.kushwaha022@gmail.com>
- *
  * @since v0.0.1 <Date: 16th April, 2019>
  */
 
 namespace Dolphin\Builders;
+
+use Dolphin\Parsers\WhereQueryParser;
+
 /**
  * This class provides the mechanism to build the Where Queries.
  */
 class WhereQueryBuilder extends QueryBuilder
 {
-  private $qb;
+    private $qb;
 
-  public function __construct(){
-    $this->qb = new QueryBuilder();
-  }
-
-    protected function prepareArrayForWhere($bindKey, $bindVal = null){
-        $ar = $conditionAr = array();
-        // expecting a string like 'status = :status'
-        if ($this->checkWherePrepareUsed($bindKey)) {
-            $conditionAr = preg_split('/:/', $bindKey);
-        }
-
-        // taking the second part just after :
-        if (is_array($conditionAr) && count($conditionAr)) {
-            $ar[':'.$conditionAr[1]] = $bindVal;
-        }
-
-        return $ar;
-    }
-
-    public function parseWhereQuery($whereQuery = [])
-    {
-        $ar = array();
-
-        foreach ($whereQuery as $where) {
-            if (is_array($where[1])) {
-                foreach ($where[1] as $key => $value) {
-                    $ar[':'.$key] = $value;
-                }
-            } elseif ($where[1] != '') {
-                $arNext = $this->prepareArrayForWhere($where[0], $where[1]);
-                if (count($arNext)) {
-                    $ar = array_merge($ar, $arNext);
-                }
-            }
-        }
-
-        return $ar;
-    }
-
-    public function checkWherePrepareUsed($condition)
-    {
-        return preg_match('/:+[a-zA-Z_]/', $condition);
+    public function __construct(){
+        $this->qb = new QueryBuilder();
     }
 
     public function buildWhereQuery($conditions = array())
     {
         $query = array();
 
-        if (count($conditions)) {
-            $firstTime = true;
-            $query[] = 'WHERE';
-            $this->whereAdded = true;
+        if (!count($conditions)) {
+            return $query;
+        }
 
-            foreach ($conditions as $where) {
-                $sign = '=';
-                if(count($where)==3) {
-                    $sign = $where[1];
-                }
-                if ($firstTime) {
-                    $query[] = $this->qb->quote($where[0]).' '.$sign.' '.end($where);
-                    $firstTime = false;
-                } else {
-                    $query[] = 'AND '.$this->qb->quote($where[0]).' '.$sign.' '.end($where);
-                }
+        $firstTime = true;
+        $query[] = 'WHERE';
+        $this->whereAdded = true;
+
+        foreach ($conditions as $where) {
+            $sign = '=';
+            if(count($where)==3) {
+                $sign = $where[1];
+            }
+            if ($firstTime) {
+                $query[] = $this->qb->quote($where[0]).' '.$sign.' '.end($where);
+                $firstTime = false;
+            } else {
+                $query[] = 'AND '.$this->qb->quote($where[0]).' '.$sign.' '.end($where);
             }
         }
 
@@ -103,26 +67,28 @@ class WhereQueryBuilder extends QueryBuilder
     {
         $query = array();
 
-        if (count($conditions)) {
-            $firstTime = false;
-            if ($this->whereAdded === false) {
-                $query[] = 'WHERE';
-                $firstTime = true;
-                $this->whereAdded = true;
+        if (!count($conditions)) {
+            return $query;
+        }
+        
+        $firstTime = false;
+        if ($this->whereAdded === false) {
+            $query[] = 'WHERE';
+            $firstTime = true;
+            $this->whereAdded = true;
+        }
+
+        foreach ($conditions as $whereIn) {
+            $dataStr = $this->buildWhereInClauseQuery($whereIn[1]);
+            if ($dataStr === null) {
+                continue;
             }
 
-            foreach ($conditions as $whereIn) {
-                $dataStr = $this->buildWhereInClauseQuery($whereIn[1]);
-                if ($dataStr === null) {
-                    continue;
-                }
-
-                if ($firstTime) {
-                    $query[] = $whereIn[0].' IN ('.$dataStr.')';
-                    $firstTime = false;
-                } else {
-                    $query[] = 'AND '.$whereIn[0].' IN ('.$dataStr.')';
-                }
+            if ($firstTime) {
+                $query[] = $whereIn[0].' IN ('.$dataStr.')';
+                $firstTime = false;
+            } else {
+                $query[] = 'AND '.$whereIn[0].' IN ('.$dataStr.')';
             }
         }
 
@@ -133,26 +99,28 @@ class WhereQueryBuilder extends QueryBuilder
     {
         $query = array();
 
-        if (count($conditions)) {
-            $firstTime = false;
-            if ($this->whereAdded === false) {
-                $query[] = 'WHERE';
-                $firstTime = true;
-                $this->whereAdded = true;
+        if (!count($conditions)) {
+            return $query;
+        }
+            
+        $firstTime = false;
+        if ($this->whereAdded === false) {
+            $query[] = 'WHERE';
+            $firstTime = true;
+            $this->whereAdded = true;
+        }
+
+        foreach ($conditions as $whereNotIn) {
+            $dataStr = $this->buildWhereInClauseQuery($whereNotIn[1]);
+            if ($dataStr === null) {
+                continue;
             }
 
-            foreach ($conditions as $whereNotIn) {
-                $dataStr = $this->buildWhereInClauseQuery($whereNotIn[1]);
-                if ($dataStr === null) {
-                    continue;
-                }
-
-                if ($firstTime) {
-                    $query[] = $whereNotIn[0].' NOT IN ('.$dataStr.')';
-                    $firstTime = false;
-                } else {
-                    $query[] = 'AND '.$whereNotIn[0].' NOT IN ('.$dataStr.')';
-                }
+            if ($firstTime) {
+                $query[] = $whereNotIn[0].' NOT IN ('.$dataStr.')';
+                $firstTime = false;
+            } else {
+                $query[] = 'AND '.$whereNotIn[0].' NOT IN ('.$dataStr.')';
             }
         }
 
@@ -163,21 +131,23 @@ class WhereQueryBuilder extends QueryBuilder
     {
         $query = array();
 
-        if (count($conditions)) {
-            $firstTime = false;
-            if ($this->whereAdded === false) {
-                $query[] = 'WHERE';
-                $firstTime = true;
-                $this->whereAdded = true;
-            }
+        if (!count($conditions)) {
+            return $query;
+        }
+        
+        $firstTime = false;
+        if ($this->whereAdded === false) {
+            $query[] = 'WHERE';
+            $firstTime = true;
+            $this->whereAdded = true;
+        }
 
-            foreach ($conditions as $whereNull) {
-                if ($firstTime) {
-                    $query[] = $whereNull.' IS NULL';
-                    $firstTime = false;
-                } else {
-                    $query[] = 'AND '.$whereNull.' IS NULL';
-                }
+        foreach ($conditions as $whereNull) {
+            if ($firstTime) {
+                $query[] = $whereNull.' IS NULL';
+                $firstTime = false;
+            } else {
+                $query[] = 'AND '.$whereNull.' IS NULL';
             }
         }
 
@@ -188,21 +158,23 @@ class WhereQueryBuilder extends QueryBuilder
     {
         $query = array();
 
-        if (count($conditions)) {
-            $firstTime = false;
-            if ($this->whereAdded === false) {
-                $query[] = 'WHERE';
-                $firstTime = true;
-                $this->whereAdded = true;
-            }
+        if (!count($conditions)) {
+            return $query;
+        }
 
-            foreach ($conditions as $whereNotNull) {
-                if ($firstTime) {
-                    $query[] = $whereNotNull.' IS NOT NULL';
-                    $firstTime = false;
-                } else {
-                    $query[] = 'AND '.$whereNotNull.' IS NOT NULL';
-                }
+        $firstTime = false;
+        if ($this->whereAdded === false) {
+            $query[] = 'WHERE';
+            $firstTime = true;
+            $this->whereAdded = true;
+        }
+
+        foreach ($conditions as $whereNotNull) {
+            if ($firstTime) {
+                $query[] = $whereNotNull.' IS NOT NULL';
+                $firstTime = false;
+            } else {
+                $query[] = 'AND '.$whereNotNull.' IS NOT NULL';
             }
         }
 
