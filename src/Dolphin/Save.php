@@ -33,6 +33,16 @@ class Save extends Dolphin
         $ar = array();
 
         // our object is set. Now we need to save it
+        $queryVal = '';
+        $query = "INSERT INTO ".$this->table()." (";
+        foreach($row as $key => $val){
+            $query.= $qb->quote($key).", ";
+            $ar[$key] = $val;
+            $queryVal.= ":".$key.", ";
+        }
+
+        $query = rtrim($query, ", ").") VALUES (".$queryVal.rtrim($query, ", ").") ";
+
         if(isset($row) && isset($row->id) && $row->id > 0 ){
             $query = "UPDATE ".$this->table()." SET ";
             foreach($row as $key => $val){
@@ -43,19 +53,6 @@ class Save extends Dolphin
 
             $query = rtrim($query, ",");
             $query.= " WHERE ".$qb->quote('id')."=:id";
-        } else{
-            $queryVal = '';
-            $query = "INSERT INTO ".$this->table()." (";
-            foreach($row as $key => $val){
-                $query.= $qb->quote($key).", ";
-                $ar[$key] = $val;
-                $queryVal.= ":".$key.", ";
-            }
-
-            $query = rtrim($query, ", ");
-            $query.= ") VALUES (".$queryVal;
-            $query = rtrim($query, ", ");
-            $query.=") ";
         }
 
         try{
