@@ -213,17 +213,6 @@ class Dolphin
         return $this;
     }
 
-    protected function buildAllWhereQuery()
-    {
-        $wqb = new WhereQueryBuilder();
-        return $wqb->buildAllWhereQuery($this->where, 
-                                        $this->whereIn, 
-                                        $this->whereNotIn, 
-                                        $this->whereNull, 
-                                        $this->whereNotNull
-                                    );
-    }
-
     /**
      * Builds Query added by method chaining.
      * It has the main logic of ORM
@@ -234,6 +223,7 @@ class Dolphin
         $tblWithPrefix = $this->table;
         $qb     = new QueryBuilder();
         $jqb = new JoinQueryBuilder();
+        $wqb = new WhereQueryBuilder();
         $prefix = $qb->getPrefix();
         $tbl    = str_replace($prefix, '', $tblWithPrefix);
 
@@ -257,7 +247,13 @@ class Dolphin
             $query = array_merge($query, $allJoinQuery);
         }
 
-        $allWhereQuery = $this->buildAllWhereQuery();
+        $allWhereQuery = $wqb->buildAllWhereQuery(
+                                    $this->where, 
+                                    $this->whereIn, 
+                                    $this->whereNotIn, 
+                                    $this->whereNull, 
+                                    $this->whereNotNull
+                                );
         if (count($allWhereQuery)) {
             $query = array_merge($query, $allWhereQuery);
         }
@@ -477,6 +473,7 @@ class Dolphin
     public function update($row)
     {
         $qb = new QueryBuilder();
+        $wqb = new WhereQueryBuilder();
         $query = "UPDATE ".$this->table." SET ";
         $ar = array();
         
@@ -488,7 +485,13 @@ class Dolphin
         $query = rtrim($query, ",");
         
         try{
-            $whereQuery = $this->buildAllWhereQuery();
+            $whereQuery = $wqb->buildAllWhereQuery(
+                                $this->where, 
+                                $this->whereIn, 
+                                $this->whereNotIn, 
+                                $this->whereNull, 
+                                $this->whereNotNull
+                            );
             $query.= " ".join(" ", $whereQuery);
             $stmt = Connection::get()->prepare($qb->queryPrefix($query));
             $stmt->execute($ar);
@@ -511,10 +514,17 @@ class Dolphin
     public function delete()
     {
         $qb = new QueryBuilder();
+        $wqb = new WhereQueryBuilder();
         $query = "DELETE FROM ".$this->table;
         
         try{
-            $whereQuery = $this->buildAllWhereQuery();
+            $whereQuery = $wqb->buildAllWhereQuery(
+                                    $this->where, 
+                                    $this->whereIn, 
+                                    $this->whereNotIn, 
+                                    $this->whereNull, 
+                                    $this->whereNotNull
+                                );
             $query.= " ".join(" ", $whereQuery);
             Connection::get()->query($qb->queryPrefix($query));
             $this->reset();
