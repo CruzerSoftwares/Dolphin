@@ -224,16 +224,6 @@ class Dolphin
                                     );
     }
 
-    protected function buildAllJoinQuery()
-    {
-        $jqb = new JoinQueryBuilder();
-        return $jqb->buildAllJoinQuery($this->join, 
-                                        $this->leftJoin, 
-                                        $this->rightJoin, 
-                                        $this->crossJoin
-                                    );
-    }
-
     /**
      * Builds Query added by method chaining.
      * It has the main logic of ORM
@@ -243,6 +233,7 @@ class Dolphin
         $query = array();
         $tblWithPrefix = $this->table;
         $qb     = new QueryBuilder();
+        $jqb = new JoinQueryBuilder();
         $prefix = $qb->getPrefix();
         $tbl    = str_replace($prefix, '', $tblWithPrefix);
 
@@ -256,7 +247,12 @@ class Dolphin
         $query[] = 'FROM';
         $query[] = $qb->quote($tblWithPrefix).' AS '.$qb->quote($tbl);
 
-        $allJoinQuery = $this->buildAllJoinQuery();
+        $allJoinQuery = $jqb->buildAllJoinQuery(
+                                $this->join, 
+                                $this->leftJoin, 
+                                $this->rightJoin, 
+                                $this->crossJoin
+                            );
         if (count($allJoinQuery)) {
             $query = array_merge($query, $allJoinQuery);
         }

@@ -3,7 +3,6 @@
  * The Query builder API.
  *
  * @author RN Kushwaha <rn.kushwaha022@gmail.com>
- *
  * @since v0.0.1 <Date: 16th April, 2019>
  */
 
@@ -19,15 +18,17 @@ class JoinQueryBuilder extends QueryBuilder
         $prefix = $this->getPrefix();
         $query = array();
 
-        if (count($conditions)) {
-            foreach ($conditions as $join) {
-                list($tableName, $tableAlias) = $this->addAlias($join[0]);
+        if (!count($conditions)) {
+            return $query;
+        }
 
-                if ($join[2] == '') {
-                    $query[] = 'JOIN '.$this->quote($prefix.$tableName).$tableAlias.' USING (`'.$join[1].'`)';
-                } else {
-                    $query[] = 'JOIN '.$this->quote($prefix.$tableName).$tableAlias.' ON ('.$this->quote($join[1]).' '.$join[2].' '.$this->quote($join[3]).')';
-                }
+        foreach ($conditions as $join) {
+            list($tableName, $tableAlias) = $this->addAlias($join[0]);
+
+            if ($join[2] == '') {
+                $query[] = 'JOIN '.$this->quote($prefix.$tableName).$tableAlias.' USING (`'.$join[1].'`)';
+            } else {
+                $query[] = 'JOIN '.$this->quote($prefix.$tableName).$tableAlias.' ON ('.$this->quote($join[1]).' '.$join[2].' '.$this->quote($join[3]).')';
             }
         }
 
@@ -39,15 +40,17 @@ class JoinQueryBuilder extends QueryBuilder
         $prefix = $this->getPrefix();
         $query = array();
 
-        if (count($conditions)) {
-            foreach ($conditions as $leftJoin) {
-                list($tableName, $tableAlias) = $this->addAlias($leftJoin[0]);
+        if (!count($conditions)) {
+            return $query;
+        }
 
-                if ($leftJoin[2] == '') {
-                    $query[] = 'LEFT JOIN '.$this->quote($prefix.$tableName).$tableAlias.' USING (`'.$leftJoin[1].'`)';
-                } else {
-                    $query[] = 'LEFT JOIN '.$this->quote($prefix.$tableName).$tableAlias.' ON ('.$this->quote($leftJoin[1]).' '.$leftJoin[2].' '.$this->quote($leftJoin[3]).')';
-                }
+        foreach ($conditions as $leftJoin) {
+            list($tableName, $tableAlias) = $this->addAlias($leftJoin[0]);
+
+            if ($leftJoin[2] == '') {
+                $query[] = 'LEFT JOIN '.$this->quote($prefix.$tableName).$tableAlias.' USING (`'.$leftJoin[1].'`)';
+            } else {
+                $query[] = 'LEFT JOIN '.$this->quote($prefix.$tableName).$tableAlias.' ON ('.$this->quote($leftJoin[1]).' '.$leftJoin[2].' '.$this->quote($leftJoin[3]).')';
             }
         }
 
@@ -59,15 +62,17 @@ class JoinQueryBuilder extends QueryBuilder
         $prefix = $this->getPrefix();
         $query = array();
 
-        if (count($conditions)) {
-            foreach ($conditions as $rightJoin) {
-                list($tableName, $tableAlias) = $this->addAlias($rightJoin[0]);
+        if (!count($conditions)) {
+            return $query;
+        }
 
-                if ($rightJoin[2] == '') {
-                    $query[] = 'RIGHT JOIN '.$this->quote($prefix.$tableName).$tableAlias.' USING (`'.$rightJoin[1].'`)';
-                } else {
-                    $query[] = 'RIGHT JOIN '.$this->quote($prefix.$tableName).$tableAlias.' ON ('.$this->quote($rightJoin[1]).' '.$rightJoin[2].' '.$this->quote($rightJoin[3]).')';
-                }
+        foreach ($conditions as $rightJoin) {
+            list($tableName, $tableAlias) = $this->addAlias($rightJoin[0]);
+
+            if ($rightJoin[2] == '') {
+                $query[] = 'RIGHT JOIN '.$this->quote($prefix.$tableName).$tableAlias.' USING (`'.$rightJoin[1].'`)';
+            } else {
+                $query[] = 'RIGHT JOIN '.$this->quote($prefix.$tableName).$tableAlias.' ON ('.$this->quote($rightJoin[1]).' '.$rightJoin[2].' '.$this->quote($rightJoin[3]).')';
             }
         }
 
@@ -79,12 +84,14 @@ class JoinQueryBuilder extends QueryBuilder
         $prefix = $this->getPrefix();
         $query = array();
 
-        if (count($conditions)) {
-            foreach ($conditions as $crossJoin) {
-                list($tableName, $tableAlias) = $this->addAlias($crossJoin[0]);
+        if (!count($conditions)) {
+            return $query;
+        }
+        
+        foreach ($conditions as $crossJoin) {
+            list($tableName, $tableAlias) = $this->addAlias($crossJoin[0]);
 
-                $query[] = 'CROSS JOIN '.$this->quote($prefix.$tableName).$tableAlias;
-            }
+            $query[] = 'CROSS JOIN '.$this->quote($prefix.$tableName).$tableAlias;
         }
 
         return $query;

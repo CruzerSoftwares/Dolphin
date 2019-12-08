@@ -25,7 +25,7 @@ class Save extends Dolphin
     public function createQuery($row){
         $ar = [];
         if(isset($row) && isset($row->id) && $row->id > 0 ){
-            $query = "UPDATE ".$this->table()." SET ";
+            $query = "UPDATE ".$this->table." SET ";
             foreach($row as $key => $val){
                 $ar[':'.$key] = $val;
                 if($key == 'id') continue;
@@ -39,7 +39,7 @@ class Save extends Dolphin
         }
 
         $queryVal = '';
-        $query = "INSERT INTO ".$this->table()." (";
+        $query = "INSERT INTO ".$this->table." (";
         foreach($row as $key => $val){
             $query.= $this->qb->quote($key).", ";
             $ar[$key] = $val;
@@ -64,7 +64,7 @@ class Save extends Dolphin
     public function save($object)
     {
         $util = new Utils();
-        $row = $util->turnObject($this->tableName, $object);
+        $row = $util->turnObject($this->className, $object);
 
         list($query, $data) = $this->createQuery($row);
 
