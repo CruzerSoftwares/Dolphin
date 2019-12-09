@@ -3,7 +3,6 @@
  * The Query builder API.
  *
  * @author RN Kushwaha <rn.kushwaha022@gmail.com>
- *
  * @since v0.0.1 <Date: 12th April, 2019>
  */
 
@@ -136,18 +135,21 @@ class Dolphin
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     public function where()
     {
         $args = func_get_args();
         if(func_num_args()===2){
             $this->where = array_merge($this->where, [[$args[0], '=', $args[1]]]);
+            return $this;
         } elseif(func_num_args()===3){
             $this->where = array_merge($this->where, [[$args[0], $args[1], $args[2]]]);
-        } else{
-            throw new Exception('Where parameter contains invalid number of parameters', 1);
+            return $this;
         }
 
-        return $this;
+        throw new Exception('Where parameter contains invalid number of parameters', 1);
     }
 
     public function whereIn($whereIn, $params = array())
@@ -219,21 +221,20 @@ class Dolphin
      */
     protected function buildQuery()
     {
-        $query = array();
         $tblWithPrefix = $this->table;
         $qb     = new QueryBuilder();
-        $jqb = new JoinQueryBuilder();
-        $wqb = new WhereQueryBuilder();
+        $jqb    = new JoinQueryBuilder();
+        $wqb    = new WhereQueryBuilder();
         $prefix = $qb->getPrefix();
         $tbl    = str_replace($prefix, '', $tblWithPrefix);
 
         $query[] = 'SELECT';
+        $startQuery = join(', ', $this->fields);
         if (empty($this->fields)) {
-            $query[] = $qb->quote($tbl).'.*';
-        } else {
-            $query[] = join(', ', $this->fields);
+            $startQuery = $qb->quote($tbl).'.*';
         }
-
+        
+        $query[] = $startQuery;
         $query[] = 'FROM';
         $query[] = $qb->quote($tblWithPrefix).' AS '.$qb->quote($tbl);
 
@@ -254,6 +255,7 @@ class Dolphin
                                     $this->whereNull, 
                                     $this->whereNotNull
                                 );
+
         if (count($allWhereQuery)) {
             $query = array_merge($query, $allWhereQuery);
         }
@@ -309,8 +311,8 @@ class Dolphin
 
     public function prepare($query, $fetchRows = 'all')
     {
-        $qb = new QueryBuilder();
-        $wqp = new WhereQueryParser();
+        $qb   = new QueryBuilder();
+        $wqp  = new WhereQueryParser();
         $util = new Utils();
         
         try {
@@ -323,11 +325,15 @@ class Dolphin
                 $this->results = $rows;
                 // now turn this stdClass object to the object type of calling model
                 $rows = $util->turnObject($this->className, $rows);
-            } else {
-                $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-                $this->results = $rows;
-                $rows = $util->turnObjects($this->className, $rows);
+                // Reset class variables
+                $this->reset();
+
+                return $rows;
             }
+
+            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $this->results = $rows;
+            $rows = $util->turnObjects($this->className, $rows);
 
             // Reset class variables
             $this->reset();
@@ -371,9 +377,7 @@ class Dolphin
     {
         $query = $this->buildQuery();
 
-        if (strripos($query, 'LIMIT 1')) {
-            // [TODO]
-        } else {
+        if (!strripos($query, 'LIMIT 1')) {
             $query .= ' LIMIT 1';
         }
 
@@ -383,7 +387,6 @@ class Dolphin
     /**
      * It fetches the row by primary key
      * 
-     * @author RN Kushwaha <rn.kushwaha022@gmail.com>
      * @since v0.0.5 
      */
     public function find($id)
@@ -399,7 +402,6 @@ class Dolphin
      * @param int $id
      * @return object $row
      * @throws Exception
-     * @author RN Kushwaha <rn.kushwaha022@gmail.com>
      * @since v0.0.5 
      */
     public function findOrFail($id)
@@ -429,7 +431,6 @@ class Dolphin
      * 
      * @return boolean
      * @throws Exception
-     * @author RN Kushwaha <rn.kushwaha022@gmail.com>
      * @since v0.0.5 
      */
     public function truncate()
@@ -452,7 +453,6 @@ class Dolphin
      * @param array $rows
      * @return integer $lastInsertedId
      * @throws Exception
-     * @author RN Kushwaha <rn.kushwaha022@gmail.com>
      * @since v0.0.5 
      */
     public function insert($rows)
@@ -467,15 +467,14 @@ class Dolphin
      * @param array $row
      * @return boolean
      * @throws Exception
-     * @author RN Kushwaha <rn.kushwaha022@gmail.com>
      * @since v0.0.5 
      */
     public function update($row)
     {
-        $qb = new QueryBuilder();
-        $wqb = new WhereQueryBuilder();
+        $qb    = new QueryBuilder();
+        $wqb   = new WhereQueryBuilder();
         $query = "UPDATE ".$this->table." SET ";
-        $ar = array();
+        $ar    = array();
         
         foreach($row as $key => $val){
             $ar[':'.$key] = $val;
@@ -508,7 +507,6 @@ class Dolphin
      * 
      * @return boolean
      * @throws Exception
-     * @author RN Kushwaha <rn.kushwaha022@gmail.com>
      * @since v0.0.5 
      */
     public function delete()
