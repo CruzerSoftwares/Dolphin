@@ -70,6 +70,15 @@ class QueryBuilder
         return '`'.$field.'`';
     }
 
+    private function getQueryFields($fields, $tbl){
+        $startQuery = join(', ', $fields);
+        if (empty($fields)) {
+            $startQuery = $this->quote($tbl).'.*';
+        }
+
+        return $startQuery;
+    }
+
     public function buildQuery(array $params)
     {
         $jqb    = new JoinQueryBuilder();
@@ -81,12 +90,7 @@ class QueryBuilder
         $query  = [];
 
         $query[] = 'SELECT';
-        $startQuery = join(', ', $params['fields']);
-        if (empty($params['fields'])) {
-            $startQuery = $this->quote($tbl).'.*';
-        }
-        
-        $query[] = $startQuery;
+        $query[] = $this->getQueryFields($params['fields'], $tbl);
         $query[] = 'FROM';
         $query[] = $this->quote($tblWithPrefix).' AS '.$this->quote($tbl);
 
