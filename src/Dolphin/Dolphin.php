@@ -227,7 +227,8 @@ class Dolphin
         $wqb    = new WhereQueryBuilder();
         $prefix = $qb->getPrefix();
         $tbl    = str_replace($prefix, '', $tblWithPrefix);
-
+        $query  = [];
+        
         $query[] = 'SELECT';
         $startQuery = join(', ', $this->fields);
         if (empty($this->fields)) {
