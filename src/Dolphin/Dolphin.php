@@ -72,19 +72,23 @@ class Dolphin
     protected $offset;
     protected $results;
 
-    public function select()
-    {
-        $args = func_get_args();
+    private function getFields(array $args, bool $quote = true){
         $fldAr = array();
         $qb = new QueryBuilder();
 
         foreach ($args as $arg) {
-            $argsAr = explode(',', $arg);
-            foreach ($argsAr as $ar) {
-                $fldAr[] = $qb->quote(trim($ar));
+            foreach (explode(',', $arg) as $ar) {
+                $fldAr[] = ($quote === true) ? $qb->quote(trim($ar)) : trim($ar);
             }
         }
 
+        return $fldAr;
+    }
+
+    public function select()
+    {
+        $args = func_get_args();
+        $fldAr = $this->getFields($args, true);
         $this->fields = array_merge($this->fields, $fldAr);
 
         return $this;
@@ -93,15 +97,7 @@ class Dolphin
     public function selectRaw()
     {
         $args = func_get_args();
-        $fldAr = array();
-
-        foreach ($args as $arg) {
-            $argsAr = explode(',', $arg);
-            foreach ($argsAr as $ar) {
-                $fldAr[] = trim($ar);
-            }
-        }
-
+        $fldAr = $fldAr = $this->getFields($args, false);
         $this->fields = array_merge($this->fields, $fldAr);
 
         return $this;
@@ -228,7 +224,7 @@ class Dolphin
         $prefix = $qb->getPrefix();
         $tbl    = str_replace($prefix, '', $tblWithPrefix);
         $query  = [];
-        
+
         $query[] = 'SELECT';
         $startQuery = join(', ', $this->fields);
         if (empty($this->fields)) {

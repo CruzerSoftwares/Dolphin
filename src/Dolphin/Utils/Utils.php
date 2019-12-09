@@ -28,25 +28,28 @@ class Utils
     public function turnObject($destination, $sourceObject)
     {
         $destination = new $destination();
-        if(is_object($sourceObject)){
-            $sourceReflection = new \ReflectionObject($sourceObject);
-            $destinationReflection = new \ReflectionObject($destination);
-            $sourceProperties = $sourceReflection->getProperties();
+        if(!is_object($sourceObject)){
+            return $destination;
+        }
+        
+        $sourceReflection = new \ReflectionObject($sourceObject);
+        $destinationReflection = new \ReflectionObject($destination);
+        $sourceProperties = $sourceReflection->getProperties();
+        
+        foreach ($sourceProperties as $sourceProperty) {
+            $sourceProperty->setAccessible(true);
+            $name = $sourceProperty->getName();
+            $value = $sourceProperty->getValue($sourceObject);
             
-            foreach ($sourceProperties as $sourceProperty) {
-                $sourceProperty->setAccessible(true);
-                $name = $sourceProperty->getName();
-                $value = $sourceProperty->getValue($sourceObject);
-                
-                if ($destinationReflection->hasProperty($name)) {
-                    $propDest = $destinationReflection->getProperty($name);
-                    $propDest->setAccessible(true);
-                    $propDest->setValue($destination,$value);
-                } else {
-                    $destination->$name = $value;
-                }
+            if ($destinationReflection->hasProperty($name)) {
+                $propDest = $destinationReflection->getProperty($name);
+                $propDest->setAccessible(true);
+                $propDest->setValue($destination,$value);
+            } else {
+                $destination->$name = $value;
             }
         }
+        
         return $destination;
     }
     
