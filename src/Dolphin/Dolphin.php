@@ -97,7 +97,7 @@ class Dolphin
     public function selectRaw()
     {
         $args = func_get_args();
-        $fldAr = $fldAr = $this->getFields($args, false);
+        $fldAr = $this->getFields($args, false);
         $this->fields = array_merge($this->fields, $fldAr);
 
         return $this;
@@ -217,70 +217,26 @@ class Dolphin
      */
     protected function buildQuery()
     {
-        $tblWithPrefix = $this->table;
         $qb     = new QueryBuilder();
-        $jqb    = new JoinQueryBuilder();
-        $wqb    = new WhereQueryBuilder();
-        $prefix = $qb->getPrefix();
-        $tbl    = str_replace($prefix, '', $tblWithPrefix);
-        $query  = [];
 
-        $query[] = 'SELECT';
-        $startQuery = join(', ', $this->fields);
-        if (empty($this->fields)) {
-            $startQuery = $qb->quote($tbl).'.*';
-        }
-        
-        $query[] = $startQuery;
-        $query[] = 'FROM';
-        $query[] = $qb->quote($tblWithPrefix).' AS '.$qb->quote($tbl);
-
-        $allJoinQuery = $jqb->buildAllJoinQuery(
-                                $this->join, 
-                                $this->leftJoin, 
-                                $this->rightJoin, 
-                                $this->crossJoin
-                            );
-        if (count($allJoinQuery)) {
-            $query = array_merge($query, $allJoinQuery);
-        }
-
-        $allWhereQuery = $wqb->buildAllWhereQuery(
-                                    $this->where, 
-                                    $this->whereIn, 
-                                    $this->whereNotIn, 
-                                    $this->whereNull, 
-                                    $this->whereNotNull
-                                );
-
-        if (count($allWhereQuery)) {
-            $query = array_merge($query, $allWhereQuery);
-        }
-
-        if (!empty($this->groupBy)) {
-            $query[] = 'GROUP BY';
-            $query[] = $this->groupBy;
-        }
-
-        if (!empty($this->having)) {
-            $query[] = 'HAVING';
-            $query[] = $this->having;
-        }
-
-        if (!empty($this->orderBy)) {
-            $query[] = 'ORDER BY';
-            $query[] = $this->orderBy;
-        }
-
-        if (!empty($this->limit)) {
-            $query[] = 'LIMIT';
-
-            if (!empty($this->offset)) {
-                $query[] = $this->offset.',';
-            }
-
-            $query[] = $this->limit;
-        }
+        $query  = $qb->buildQuery([
+            'table' => $this->table,
+            'fields' => $this->fields,
+            'join' => $this->join, 
+            'leftJoin' => $this->leftJoin, 
+            'rightJoin' => $this->rightJoin, 
+            'crossJoin' => $this->crossJoin,
+            'where' => $this->where, 
+            'whereIn' => $this->whereIn, 
+            'whereNotIn' => $this->whereNotIn, 
+            'whereNull' => $this->whereNull, 
+            'whereNotNull' => $this->whereNotNull,
+            'groupBy' => $this->groupBy,
+            'having' => $this->having,
+            'orderBy' => $this->orderBy,
+            'limit' => $this->limit,
+            'offset' => $this->offset
+        ]);
 
         return join(' ', $query);
     }

@@ -69,4 +69,74 @@ class QueryBuilder
 
         return '`'.$field.'`';
     }
+
+    public function buildQuery(array $params)
+    {
+        $jqb    = new JoinQueryBuilder();
+        $wqb    = new WhereQueryBuilder();
+
+        $prefix = $this->getPrefix();
+        $tblWithPrefix = $params['table'];
+        $tbl    = str_replace($prefix, '', $tblWithPrefix);
+        $query  = [];
+
+        $query[] = 'SELECT';
+        $startQuery = join(', ', $params['fields']);
+        if (empty($params['fields'])) {
+            $startQuery = $this->quote($tbl).'.*';
+        }
+        
+        $query[] = $startQuery;
+        $query[] = 'FROM';
+        $query[] = $this->quote($tblWithPrefix).' AS '.$this->quote($tbl);
+
+        $allJoinQuery = $jqb->buildAllJoinQuery(
+                                $params['join'], 
+                                $params['leftJoin'], 
+                                $params['rightJoin'], 
+                                $params['crossJoin']
+                            );
+        if (count($allJoinQuery)) {
+            $query = array_merge($query, $allJoinQuery);
+        }
+
+        $allWhereQuery = $wqb->buildAllWhereQuery(
+                                    $params['where'], 
+                                    $params['whereIn'], 
+                                    $params['whereNotIn'], 
+                                    $params['whereNull'], 
+                                    $params['whereNotNull']
+                                );
+
+        if (count($allWhereQuery)) {
+            $query = array_merge($query, $allWhereQuery);
+        }
+
+        if (!empty($params['groupBy'])) {
+            $query[] = 'GROUP BY';
+            $query[] = $params['groupBy'];
+        }
+
+        if (!empty($params['having'])) {
+            $query[] = 'HAVING';
+            $query[] = $params['having'];
+        }
+
+        if (!empty($params['orderBy'])) {
+            $query[] = 'ORDER BY';
+            $query[] = $params['orderBy'];
+        }
+
+        if (!empty($params['limit'])) {
+            $query[] = 'LIMIT';
+
+            if (!empty($params['offset'])) {
+                $query[] = $params['offset'].',';
+            }
+
+            $query[] = $params['limit'];
+        }
+
+        return $query;
+    }
 }
