@@ -39,10 +39,10 @@ class WhereQueryBuilder extends QueryBuilder
                 $sign = $where[1];
             }
             if ($firstTime) {
-                $query[] = $this->qb->quote($where[0]).' '.$sign.' '.end($where);
+                $query[] = $this->qb->quote(trim($where[0])).' '.$sign.' '.end($where);
                 $firstTime = false;
             } else {
-                $query[] = 'AND '.$this->qb->quote($where[0]).' '.$sign.' '.end($where);
+                $query[] = 'AND '.$this->qb->quote(trim($where[0])).' '.$sign.' '.end($where);
             }
         }
 
@@ -85,10 +85,10 @@ class WhereQueryBuilder extends QueryBuilder
             }
 
             if ($firstTime) {
-                $query[] = $whereIn[0].' IN ('.$dataStr.')';
+                $query[] = trim($whereIn[0]).' IN ('.$dataStr.')';
                 $firstTime = false;
             } else {
-                $query[] = 'AND '.$whereIn[0].' IN ('.$dataStr.')';
+                $query[] = 'AND '.trim($whereIn[0]).' IN ('.$dataStr.')';
             }
         }
 
@@ -117,10 +117,10 @@ class WhereQueryBuilder extends QueryBuilder
             }
 
             if ($firstTime) {
-                $query[] = $whereNotIn[0].' NOT IN ('.$dataStr.')';
+                $query[] = trim($whereNotIn[0]).' NOT IN ('.$dataStr.')';
                 $firstTime = false;
             } else {
-                $query[] = 'AND '.$whereNotIn[0].' NOT IN ('.$dataStr.')';
+                $query[] = 'AND '.trim($whereNotIn[0]).' NOT IN ('.$dataStr.')';
             }
         }
 
@@ -144,10 +144,10 @@ class WhereQueryBuilder extends QueryBuilder
 
         foreach ($conditions as $whereNull) {
             if ($firstTime) {
-                $query[] = $whereNull.' IS NULL';
+                $query[] = trim($whereNull).' IS NULL';
                 $firstTime = false;
             } else {
-                $query[] = 'AND '.$whereNull.' IS NULL';
+                $query[] = 'AND '.trim($whereNull).' IS NULL';
             }
         }
 
@@ -171,10 +171,10 @@ class WhereQueryBuilder extends QueryBuilder
 
         foreach ($conditions as $whereNotNull) {
             if ($firstTime) {
-                $query[] = $whereNotNull.' IS NOT NULL';
+                $query[] = trim($whereNotNull).' IS NOT NULL';
                 $firstTime = false;
             } else {
-                $query[] = 'AND '.$whereNotNull.' IS NOT NULL';
+                $query[] = 'AND '.trim($whereNotNull).' IS NOT NULL';
             }
         }
 

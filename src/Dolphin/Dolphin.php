@@ -11,7 +11,6 @@ namespace Dolphin\Mapper;
 use Dolphin\Connections\Connection;
 use Dolphin\Builders\QueryBuilder;
 use Dolphin\Builders\WhereQueryBuilder;
-use Dolphin\Builders\JoinQueryBuilder;
 use Dolphin\Builders\InsertQueryBuilder;
 use Dolphin\Parsers\WhereQueryParser;
 use Dolphin\Utils\Utils;
@@ -176,6 +175,13 @@ class Dolphin
         return $this;
     }
 
+    public function whereRaw($whereConditions)
+    {
+        $this->whereRaw = array_merge($this->whereRaw, [$whereConditions]);
+
+        return $this;
+    }
+
     public function offset($offset)
     {
         $this->offset = $offset;
@@ -335,6 +341,13 @@ class Dolphin
         }
 
         return $this->prepare($query, 'first');
+    }
+    
+    public function all()
+    {
+        $query = $this->buildQuery();
+
+        return $this->prepare($query);
     }
 
     /**
