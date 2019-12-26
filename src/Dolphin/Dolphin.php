@@ -63,6 +63,7 @@ class Dolphin
     protected $rightJoin = array();
     protected $crossJoin = array();
     protected $where = array();
+    protected $whereRaw = array();
     protected $whereIn = array();
     protected $whereNotIn = array();
     protected $whereNull = array();
@@ -228,14 +229,14 @@ class Dolphin
         $query  = $qb->buildQuery([
             'table' => $this->table,
             'fields' => $this->fields,
-            'join' => $this->join, 
-            'leftJoin' => $this->leftJoin, 
-            'rightJoin' => $this->rightJoin, 
+            'join' => $this->join,
+            'leftJoin' => $this->leftJoin,
+            'rightJoin' => $this->rightJoin,
             'crossJoin' => $this->crossJoin,
-            'where' => $this->where, 
-            'whereIn' => $this->whereIn, 
-            'whereNotIn' => $this->whereNotIn, 
-            'whereNull' => $this->whereNull, 
+            'where' => $this->where,
+            'whereIn' => $this->whereIn,
+            'whereNotIn' => $this->whereNotIn,
+            'whereNull' => $this->whereNull,
             'whereNotNull' => $this->whereNotNull,
             'groupBy' => $this->groupBy,
             'having' => $this->having,
@@ -260,6 +261,7 @@ class Dolphin
         $this->rightJoin = array();
         $this->crossJoin = array();
         $this->where = array();
+        $this->$whereRaw = array();
         $this->whereIn = array();
         $this->whereNotIn = array();
         $this->whereNull = array();
@@ -273,7 +275,7 @@ class Dolphin
         $qb   = new QueryBuilder();
         $wqp  = new WhereQueryParser();
         $util = new Utils();
-        
+
         try {
             $ar = $wqp->parseWhereQuery($this->where);
             $stmt = Connection::get()->prepare($qb->queryPrefix($query));
@@ -342,7 +344,7 @@ class Dolphin
 
         return $this->prepare($query, 'first');
     }
-    
+
     public function all()
     {
         $query = $this->buildQuery();
@@ -352,28 +354,28 @@ class Dolphin
 
     /**
      * It fetches the row by primary key
-     * 
-     * @since v0.0.5 
+     *
+     * @since v0.0.5
      */
     public function find($id)
     {
         $this->where('id = :id', $id);
-        
+
         return $this->first();
     }
 
     /**
      * It fetches the row by primary key
-     * 
+     *
      * @param int $id
      * @return object $row
      * @throws Exception
-     * @since v0.0.5 
+     * @since v0.0.5
      */
     public function findOrFail($id)
     {
         $this->where('id = :id', $id);
-        
+
         $row = $this->first();
 
         if($row == null ){
@@ -394,16 +396,16 @@ class Dolphin
 
     /**
      * It truncates the table
-     * 
+     *
      * @return boolean
      * @throws Exception
-     * @since v0.0.5 
+     * @since v0.0.5
      */
     public function truncate()
     {
         $qb = new QueryBuilder();
         $query = "TRUNCATE ".$this->table;
-        
+
         try{
             Connection::get()->query($qb->queryPrefix($query));
         } catch(Exception $e){
@@ -415,11 +417,11 @@ class Dolphin
 
     /**
      * It inserts the new rows
-     * 
+     *
      * @param array $rows
      * @return integer $lastInsertedId
      * @throws Exception
-     * @since v0.0.5 
+     * @since v0.0.5
      */
     public function insert($rows)
     {
@@ -429,11 +431,11 @@ class Dolphin
 
     /**
      * It updates the rows
-     * 
+     *
      * @param array $row
      * @return boolean
      * @throws Exception
-     * @since v0.0.5 
+     * @since v0.0.5
      */
     public function update($row)
     {
@@ -441,20 +443,20 @@ class Dolphin
         $wqb   = new WhereQueryBuilder();
         $query = "UPDATE ".$this->table." SET ";
         $ar    = array();
-        
+
         foreach($row as $key => $val){
             $ar[':'.$key] = $val;
             $query.= $qb->quote($key)." =:".$key.",";
         }
 
         $query = rtrim($query, ",");
-        
+
         try{
             $whereQuery = $wqb->buildAllWhereQuery(
-                                $this->where, 
-                                $this->whereIn, 
-                                $this->whereNotIn, 
-                                $this->whereNull, 
+                                $this->where,
+                                $this->whereIn,
+                                $this->whereNotIn,
+                                $this->whereNull,
                                 $this->whereNotNull
                             );
             $query.= " ".join(" ", $whereQuery);
@@ -470,23 +472,23 @@ class Dolphin
 
     /**
      * It deleted the rows matched by where clause
-     * 
+     *
      * @return boolean
      * @throws Exception
-     * @since v0.0.5 
+     * @since v0.0.5
      */
     public function delete()
     {
         $qb = new QueryBuilder();
         $wqb = new WhereQueryBuilder();
         $query = "DELETE FROM ".$this->table;
-        
+
         try{
             $whereQuery = $wqb->buildAllWhereQuery(
-                                    $this->where, 
-                                    $this->whereIn, 
-                                    $this->whereNotIn, 
-                                    $this->whereNull, 
+                                    $this->where,
+                                    $this->whereIn,
+                                    $this->whereNotIn,
+                                    $this->whereNull,
                                     $this->whereNotNull
                                 );
             $query.= " ".join(" ", $whereQuery);
