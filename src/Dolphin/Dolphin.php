@@ -85,6 +85,12 @@ class Dolphin
         return $fldAr;
     }
 
+    private function validateArgsCount($noOfArgs){
+        if($noOfArgs<2 || $noOfArgs >3){
+            throw new Exception('Where parameter contains invalid number of parameters', 1);
+        }
+    }
+
     public function select()
     {
         $args = func_get_args();
@@ -137,15 +143,17 @@ class Dolphin
     public function where()
     {
         $args = func_get_args();
-        if(func_num_args()===2){
+        $noOfArgs = func_num_args();
+
+        $this->validateArgsCount($noOfArgs);
+
+        if($noOfArgs===2){
             $this->where = array_merge($this->where, [[$args[0], '=', $args[1]]]);
-            return $this;
-        } elseif(func_num_args()===3){
-            $this->where = array_merge($this->where, [[$args[0], $args[1], $args[2]]]);
             return $this;
         }
 
-        throw new Exception('Where parameter contains invalid number of parameters', 1);
+        $this->where = array_merge($this->where, [[$args[0], $args[1], $args[2]]]);
+        return $this;
     }
 
     public function whereIn($whereIn, $params = array())
@@ -312,13 +320,13 @@ class Dolphin
             $obj = Connection::get()->query($qb->queryPrefix($query), \PDO::FETCH_OBJ);
 
             if ($fetchRows == 'count') {
-                $data = $obj->fetchColumn();
+                $obj = $obj->fetchColumn();
             }
 
             // Reset class variables
             $this->reset();
 
-            return isset($data) ? $data : $obj;
+            return $obj;
         } catch (\PDOException $ex) {
             throw new \PDOException($ex->getMessage(), 1);
         } catch (Exception $e) {
