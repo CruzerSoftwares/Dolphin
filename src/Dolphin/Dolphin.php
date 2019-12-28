@@ -285,19 +285,12 @@ class Dolphin
 
             if ($fetchRows == 'first') {
                 $this->results = $stmt->fetch(\PDO::FETCH_OBJ);
-
-                if(count($this->results) ){
-                  // now turn this stdClass object to the object type of calling model
-                  $rows = $util->turnObject($this->className, $this->results);
-                }
-                // Reset class variables
-                $this->reset();
-
-                return $rows;
+            } else{
+                $this->results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             }
 
-            $this->results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             if(count($this->results) ){
+              // now turn this stdClass object to the object type of calling model
               $rows = $util->turnObjects($this->className, $this->results);
             }
             // Reset class variables
