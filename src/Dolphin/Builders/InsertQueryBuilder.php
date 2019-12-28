@@ -3,7 +3,6 @@
  * The Insert Query builder Class.
  *
  * @author RN Kushwaha <rn.kushwaha022@gmail.com>
- *
  * @since v0.0.5 <Date: 09th May, 2019>
  */
 
@@ -17,7 +16,7 @@ use Exception;
  */
 class InsertQueryBuilder extends QueryBuilder
 {
-    public function buildInsert($table, $obj){
+    private function buildInsert($table, $obj){
         $qb = new QueryBuilder();
         $query = "INSERT INTO ".$table." (";
         foreach($obj as $key => $val){
@@ -30,7 +29,7 @@ class InsertQueryBuilder extends QueryBuilder
         return $query;
     }
 
-    public function buildInsertPlaceholder($rows){
+    private function buildInsertPlaceholder($rows){
         $ar = array();
         $query = "(";
 
@@ -45,7 +44,7 @@ class InsertQueryBuilder extends QueryBuilder
         return ['query' => $query, 'array' => $ar];
     }
 
-    public function buildInsertPlaceholders($rows){
+    private function buildInsertPlaceholders($rows){
         $bindAr = array();
         $query = "";
 
@@ -79,7 +78,6 @@ class InsertQueryBuilder extends QueryBuilder
      */
     public function insert($rows, $table)
     {
-        $qb = new QueryBuilder();
         $db = Connection::get();
 
         $dataToBuild = $rows;
@@ -96,7 +94,7 @@ class InsertQueryBuilder extends QueryBuilder
         $bindAr = $dataRet['array'];
 
         try{
-            $stmt = $db->prepare($qb->queryPrefix($query));
+            $stmt = $db->prepare($this->queryPrefix($query));
 
             if($this->checkMultipleInsert($rows)){
                 foreach($bindAr as $param => $val){

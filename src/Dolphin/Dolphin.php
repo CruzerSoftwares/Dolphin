@@ -13,6 +13,7 @@ use Dolphin\Builders\QueryBuilder;
 use Dolphin\Builders\WhereQueryBuilder;
 use Dolphin\Builders\InsertQueryBuilder;
 use Dolphin\Parsers\WhereQueryParser;
+use Dolphin\Parsers\UpdateQueryBuilder;
 use Dolphin\Utils\Utils;
 use \Exception;
 
@@ -444,36 +445,8 @@ class Dolphin
      */
     public function update($row)
     {
-        $qb    = new QueryBuilder();
-        $wqb   = new WhereQueryBuilder();
-        $query = "UPDATE ".$this->table." SET ";
-        $ar    = array();
-
-        foreach($row as $key => $val){
-            $ar[':'.$key] = $val;
-            $query.= $qb->quote($key)." =:".$key.",";
-        }
-
-        $query = rtrim($query, ",");
-
-        try{
-            $whereQuery = $wqb->buildAllWhereQuery(
-                                $this->where,
-                                $this->whereRaw,
-                                $this->whereIn,
-                                $this->whereNotIn,
-                                $this->whereNull,
-                                $this->whereNotNull
-                            );
-            $query.= " ".join(" ", $whereQuery);
-            $stmt = Connection::get()->prepare($qb->queryPrefix($query));
-            $stmt->execute($ar);
-            $this->reset();
-        } catch(Exception $e){
-            throw new Exception($e->getMessage());
-        }
-
-        return true;
+        $uqb = new UpdateQueryBuilder();
+        return $uqb->update($rows, $this->table);
     }
 
     /**
