@@ -46,13 +46,7 @@ class QueryBuilder
     {
         $tableAlias = '';
 
-        if (strpos($tableName, ' AS ') > 0) {
-            $tblName = explode(' AS ', $tableName);
-            $tableAlias = ' AS '.self::quote($tblName[1]);
-            $tableName = $tblName[0];
-        }
-
-        if (strpos($tableName, ' as ') > 0) {
+        if (stripos($tableName, ' as ') > 0) {
             $tblName = explode(' as ', $tableName);
             $tableAlias = ' AS '.self::quote($tblName[1]);
             $tableName = $tblName[0];
@@ -95,9 +89,9 @@ class QueryBuilder
         $query[] = $this->quote($tblWithPrefix).' AS '.$this->quote($tbl);
 
         $allJoinQuery = $jqb->buildAllJoinQuery(
-                                $params['join'], 
-                                $params['leftJoin'], 
-                                $params['rightJoin'], 
+                                $params['join'],
+                                $params['leftJoin'],
+                                $params['rightJoin'],
                                 $params['crossJoin']
                             );
         if (count($allJoinQuery)) {
@@ -105,10 +99,10 @@ class QueryBuilder
         }
 
         $allWhereQuery = $wqb->buildAllWhereQuery(
-                                    $params['where'], 
-                                    $params['whereIn'], 
-                                    $params['whereNotIn'], 
-                                    $params['whereNull'], 
+                                    $params['where'],
+                                    $params['whereIn'],
+                                    $params['whereNotIn'],
+                                    $params['whereNull'],
                                     $params['whereNotNull']
                                 );
 
