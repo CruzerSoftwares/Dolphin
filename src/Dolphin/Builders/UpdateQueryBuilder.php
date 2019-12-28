@@ -20,7 +20,7 @@ class UpdateQueryBuilder extends QueryBuilder
      * It inserts the new rows
      *
      * @param array $rows
-     * @return integer $lastInsertedId
+     * @return boolean
      * @throws Exception
      * @author RN Kushwaha <rn.kushwaha022@gmail.com>
      * @since v0.0.5

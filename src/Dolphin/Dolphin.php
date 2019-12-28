@@ -12,8 +12,8 @@ use Dolphin\Connections\Connection;
 use Dolphin\Builders\QueryBuilder;
 use Dolphin\Builders\WhereQueryBuilder;
 use Dolphin\Builders\InsertQueryBuilder;
+use Dolphin\Builders\UpdateQueryBuilder;
 use Dolphin\Parsers\WhereQueryParser;
-use Dolphin\Parsers\UpdateQueryBuilder;
 use Dolphin\Utils\Utils;
 use \Exception;
 
@@ -446,7 +446,7 @@ class Dolphin
     public function update($row)
     {
         $result =  (new UpdateQueryBuilder())->update(
-          $rows,
+          $row,
           $this->table,
           $this->where,
           $this->whereRaw,
