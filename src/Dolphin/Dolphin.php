@@ -234,6 +234,7 @@ class Dolphin
             'rightJoin' => $this->rightJoin,
             'crossJoin' => $this->crossJoin,
             'where' => $this->where,
+            'whereRaw' => $this->whereRaw,
             'whereIn' => $this->whereIn,
             'whereNotIn' => $this->whereNotIn,
             'whereNull' => $this->whereNull,
@@ -261,7 +262,7 @@ class Dolphin
         $this->rightJoin = array();
         $this->crossJoin = array();
         $this->where = array();
-        $this->$whereRaw = array();
+        $this->whereRaw = array();
         $this->whereIn = array();
         $this->whereNotIn = array();
         $this->whereNull = array();
@@ -275,6 +276,7 @@ class Dolphin
         $qb   = new QueryBuilder();
         $wqp  = new WhereQueryParser();
         $util = new Utils();
+        $rows = null;
 
         try {
             $ar = $wqp->parseWhereQuery($this->where);
@@ -282,20 +284,22 @@ class Dolphin
             $stmt->execute($ar);
 
             if ($fetchRows == 'first') {
-                $rows = $stmt->fetch(\PDO::FETCH_OBJ);
-                $this->results = $rows;
-                // now turn this stdClass object to the object type of calling model
-                $rows = $util->turnObject($this->className, $rows);
+                $this->results = $stmt->fetch(\PDO::FETCH_OBJ);
+
+                if(count($this->results) ){
+                  // now turn this stdClass object to the object type of calling model
+                  $rows = $util->turnObject($this->className, $this->results);
+                }
                 // Reset class variables
                 $this->reset();
 
                 return $rows;
             }
 
-            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-            $this->results = $rows;
-            $rows = $util->turnObjects($this->className, $rows);
-
+            $this->results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            if(count($this->results) ){
+              $rows = $util->turnObjects($this->className, $this->results);
+            }
             // Reset class variables
             $this->reset();
 
@@ -359,7 +363,7 @@ class Dolphin
      */
     public function find($id)
     {
-        $this->where('id = :id', $id);
+        $this->where('id', $id);
 
         return $this->first();
     }
@@ -374,7 +378,7 @@ class Dolphin
      */
     public function findOrFail($id)
     {
-        $this->where('id = :id', $id);
+        $this->where('id', $id);
 
         $row = $this->first();
 
@@ -454,6 +458,7 @@ class Dolphin
         try{
             $whereQuery = $wqb->buildAllWhereQuery(
                                 $this->where,
+                                $this->whereRaw,
                                 $this->whereIn,
                                 $this->whereNotIn,
                                 $this->whereNull,
@@ -486,6 +491,7 @@ class Dolphin
         try{
             $whereQuery = $wqb->buildAllWhereQuery(
                                     $this->where,
+                                    $this->whereRaw,
                                     $this->whereIn,
                                     $this->whereNotIn,
                                     $this->whereNull,

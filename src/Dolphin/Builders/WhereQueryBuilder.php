@@ -39,10 +39,10 @@ class WhereQueryBuilder extends QueryBuilder
                 $sign = $where[1];
             }
             if ($firstTime) {
-                $query[] = $this->qb->quote(trim($where[0])).' '.$sign.' '.end($where);
+                $query[] = $this->qb->quote(trim($where[0])).' '.$sign.' '.$this->qb->enclose(end($where));
                 $firstTime = false;
             } else {
-                $query[] = 'AND '.$this->qb->quote(trim($where[0])).' '.$sign.' '.end($where);
+                $query[] = 'AND '.$this->qb->quote(trim($where[0])).' '.$sign.' '.$this->qb->enclose(end($where));
             }
         }
 
@@ -63,6 +63,33 @@ class WhereQueryBuilder extends QueryBuilder
         return $dataStr;
     }
 
+    public function buildWhereRawQuery($conditions = array())
+    {
+        $query = array();
+
+        if (!count($conditions)) {
+            return $query;
+        }
+
+        $firstTime = false;
+        if ($this->whereAdded === false) {
+            $query[] = 'WHERE';
+            $firstTime = true;
+            $this->whereAdded = true;
+        }
+
+        foreach ($conditions as $whereRaw) {
+            if ($firstTime) {
+                $query[] = $whereRaw;
+                $firstTime = false;
+            } else {
+                $query[] = 'AND '.$whereRaw;
+            }
+        }
+
+        return $query;
+    }
+
     public function buildWhereInQuery($conditions = array())
     {
         $query = array();
@@ -70,7 +97,7 @@ class WhereQueryBuilder extends QueryBuilder
         if (!count($conditions)) {
             return $query;
         }
-        
+
         $firstTime = false;
         if ($this->whereAdded === false) {
             $query[] = 'WHERE';
@@ -102,7 +129,7 @@ class WhereQueryBuilder extends QueryBuilder
         if (!count($conditions)) {
             return $query;
         }
-            
+
         $firstTime = false;
         if ($this->whereAdded === false) {
             $query[] = 'WHERE';
@@ -134,7 +161,7 @@ class WhereQueryBuilder extends QueryBuilder
         if (!count($conditions)) {
             return $query;
         }
-        
+
         $firstTime = false;
         if ($this->whereAdded === false) {
             $query[] = 'WHERE';
@@ -181,12 +208,17 @@ class WhereQueryBuilder extends QueryBuilder
         return $query;
     }
 
-    public function buildAllWhereQuery($where, $whereIn, $whereNotIn, $whereNull, $whereNotNull)
+    public function buildAllWhereQuery($where, $whereRaw, $whereIn, $whereNotIn, $whereNull, $whereNotNull)
     {
         $query = array();
         $whereQuery = $this->buildWhereQuery($where);
         if (count($whereQuery)) {
             $query = array_merge($query, $whereQuery);
+        }
+
+        $whereRawQuery = $this->buildWhereRawQuery($whereRaw);
+        if (count($whereRawQuery)) {
+            $query = array_merge($query, $whereRawQuery);
         }
 
         $whereInQuery = $this->buildWhereInQuery($whereIn);

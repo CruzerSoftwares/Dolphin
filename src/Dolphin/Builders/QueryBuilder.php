@@ -16,7 +16,7 @@ use Dolphin\Connections\Connection;
  */
 class QueryBuilder
 {
-    protected $whereAdded;
+    protected $whereAdded = false;
 
     public function queryPrefix($query)
     {
@@ -63,6 +63,10 @@ class QueryBuilder
 
         return '`'.$field.'`';
     }
+    public function enclose($field)
+    {
+        return "'".$field."'";
+    }
 
     private function getQueryFields($fields, $tbl){
         $startQuery = join(', ', $fields);
@@ -100,12 +104,12 @@ class QueryBuilder
 
         $allWhereQuery = $wqb->buildAllWhereQuery(
                                     $params['where'],
+                                    $params['whereRaw'],
                                     $params['whereIn'],
                                     $params['whereNotIn'],
                                     $params['whereNull'],
                                     $params['whereNotNull']
                                 );
-
         if (count($allWhereQuery)) {
             $query = array_merge($query, $allWhereQuery);
         }
