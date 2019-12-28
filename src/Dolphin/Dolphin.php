@@ -401,27 +401,6 @@ class Dolphin
     }
 
     /**
-     * It truncates the table
-     *
-     * @return boolean
-     * @throws Exception
-     * @since v0.0.5
-     */
-    public function truncate()
-    {
-        $qb = new QueryBuilder();
-        $query = "TRUNCATE ".$this->table;
-
-        try{
-            Connection::get()->query($qb->queryPrefix($query));
-        } catch(Exception $e){
-            throw new Exception($e->getMessage());
-        }
-
-        return true;
-    }
-
-    /**
      * It inserts the new rows
      *
      * @param array $rows
@@ -431,8 +410,7 @@ class Dolphin
      */
     public function insert($rows)
     {
-        $iqb = new InsertQueryBuilder();
-        return $iqb->insert($rows, $this->table);
+        return (new InsertQueryBuilder())->insert($rows, $this->table);
     }
 
     /**
@@ -462,6 +440,27 @@ class Dolphin
     }
 
     /**
+     * It truncates the table
+     *
+     * @return boolean
+     * @throws Exception
+     * @since v0.0.5
+     */
+    public function truncate()
+    {
+        $qb = new QueryBuilder();
+        $query = "TRUNCATE ".$this->table;
+
+        try{
+            Connection::get()->query($qb->queryPrefix($query));
+        } catch(Exception $e){
+            throw new Exception($e->getMessage());
+        }
+
+        return true;
+    }
+
+    /**
      * It deleted the rows matched by where clause
      *
      * @return boolean
@@ -470,27 +469,19 @@ class Dolphin
      */
     public function delete()
     {
-        $qb = new QueryBuilder();
-        $wqb = new WhereQueryBuilder();
-        $query = "DELETE FROM ".$this->table;
+        $result =  (new DeleteQueryBuilder())->delete(
+          $this->table,
+          $this->where,
+          $this->whereRaw,
+          $this->whereIn,
+          $this->whereNotIn,
+          $this->whereNull,
+          $this->whereNotNull
+        );
 
-        try{
-            $whereQuery = $wqb->buildAllWhereQuery(
-                                    $this->where,
-                                    $this->whereRaw,
-                                    $this->whereIn,
-                                    $this->whereNotIn,
-                                    $this->whereNull,
-                                    $this->whereNotNull
-                                );
-            $query.= " ".join(" ", $whereQuery);
-            Connection::get()->query($qb->queryPrefix($query));
-            $this->reset();
-        } catch(Exception $e){
-            throw new Exception($e->getMessage());
-        }
+        $this->reset();
 
-        return true;
+        return $result;
     }
 
 }

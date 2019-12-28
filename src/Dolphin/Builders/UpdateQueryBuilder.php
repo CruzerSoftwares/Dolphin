@@ -3,7 +3,7 @@
  * The Update Query builder Class.
  *
  * @author RN Kushwaha <rn.kushwaha022@gmail.com>
- * @since v0.0.8 <Date: 09th May, 2019>
+ * @since v0.0.8 <Date: 29th Dec, 2019>
  */
 
 namespace Dolphin\Builders;
