@@ -21,10 +21,9 @@ class WhereQueryBuilder extends QueryBuilder
         $this->qb = new QueryBuilder();
     }
 
-    public function buildWhereQuery($conditions = array())
+    public function buildWhereQuery($conditions = array(), $query1 = array())
     {
         $query = array();
-
         if (!count($conditions)) {
             return $query;
         }
@@ -46,6 +45,9 @@ class WhereQueryBuilder extends QueryBuilder
             }
         }
 
+        if (count($query)) {
+            $query = array_merge($query, $query1);
+        }
         return $query;
     }
 
@@ -211,10 +213,7 @@ class WhereQueryBuilder extends QueryBuilder
     public function buildAllWhereQuery($where, $whereRaw, $whereIn, $whereNotIn, $whereNull, $whereNotNull)
     {
         $query = array();
-        $whereQuery = $this->buildWhereQuery($where);
-        if (count($whereQuery)) {
-            $query = array_merge($query, $whereQuery);
-        }
+        $query = $this->buildWhereQuery($where, $query);
 
         $whereRawQuery = $this->buildWhereRawQuery($whereRaw);
         if (count($whereRawQuery)) {
