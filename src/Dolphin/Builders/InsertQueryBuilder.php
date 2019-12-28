@@ -65,6 +65,9 @@ class InsertQueryBuilder extends QueryBuilder
         return ['query' => $query, 'array' => $bindAr];
     }
 
+    private function checkMultipleInsert($rows = array()){
+      return is_array($rows) && isset($rows[0]) && is_array($rows[0]);
+    }
     /**
      * It inserts the new rows
      *
@@ -82,7 +85,7 @@ class InsertQueryBuilder extends QueryBuilder
         $dataToBuild = $rows;
         $methodToCall = 'buildInsertPlaceholder';
 
-        if(is_array($rows) && isset($rows[0]) && is_array($rows[0])){
+        if($this->checkMultipleInsert($rows)){
             $dataToBuild = $rows[0];
             $methodToCall = 'buildInsertPlaceholders';
         }
@@ -95,7 +98,7 @@ class InsertQueryBuilder extends QueryBuilder
         try{
             $stmt = $db->prepare($qb->queryPrefix($query));
 
-            if(is_array($rows) && isset($rows[0]) && is_array($rows[0])){
+            if($this->checkMultipleInsert($rows)){
                 foreach($bindAr as $param => $val){
                     $stmt->bindValue($param, $val);
                 }
