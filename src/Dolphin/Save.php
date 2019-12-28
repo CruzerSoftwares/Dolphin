@@ -22,20 +22,26 @@ class Save extends Dolphin
         $this->qb = new QueryBuilder();
     }
 
+    public function buildQueryStrSingleFromArr($row = array()){
+      $ar = [];
+      $query = "UPDATE ".$this->table." SET ";
+      foreach($row as $key => $val){
+          $ar[':'.$key] = $val;
+          if($key == 'id') continue;
+          $query.= $this->qb->quote($key)." =:".$key.",";
+      }
+
+      return ['ar' => $ar, 'query' => $query];
+    }
     public function createQuery($row){
         $ar = [];
         if(isset($row) && isset($row->id) && $row->id > 0 ){
             $query = "UPDATE ".$this->table." SET ";
-            foreach($row as $key => $val){
-                $ar[':'.$key] = $val;
-                if($key == 'id') continue;
-                $query.= $this->qb->quote($key)." =:".$key.",";
-            }
-
-            $query = rtrim($query, ",");
+            $mixedData = $this->buildQueryStrSingleFromArr($row);
+            $query = rtrim($mixedData['query'], ",");
             $query.= " WHERE ".$this->qb->quote('id')."=:id";
-            
-            return ['query' => $query, 'data' => $ar];
+
+            return ['query' => $query, 'data' => $mixedData['ar']];
         }
 
         $queryVal = '';
@@ -54,12 +60,12 @@ class Save extends Dolphin
     /**
      * It saves the row by primary key [id]
      * Or inserts a new row if id is null
-     * 
+     *
      * @param object $object
      * @return boolean
      * @throws Exception
      * @author RN Kushwaha <rn.kushwaha022@gmail.com>
-     * @since v0.0.5 
+     * @since v0.0.5
      */
     public function save($object)
     {
@@ -77,6 +83,5 @@ class Save extends Dolphin
 
         return true;
     }
-    
-}
 
+}

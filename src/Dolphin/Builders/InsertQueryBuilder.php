@@ -23,32 +23,32 @@ class InsertQueryBuilder extends QueryBuilder
         foreach($obj as $key => $val){
             $query.= $qb->quote($key).", ";
         }
-        
+
         $query = rtrim($query, ", ");
         $query.= ") VALUES ";
-        
+
         return $query;
     }
-    
+
     public function buildInsertPlaceholder($rows){
         $ar = array();
         $query = "(";
-        
+
         foreach($rows as $key => $val){
             $ar[$key] = $val;
             $query.= ":".$key.", ";
         }
-        
+
         $query = rtrim($query, ", ");
         $query.=") ";
-        
+
         return ['query' => $query, 'array' => $ar];
     }
-    
+
     public function buildInsertPlaceholders($rows){
         $bindAr = array();
         $query = "";
-        
+
         foreach($rows as $i => $row){
             $query.="(";
             foreach($row as $key => $val){
@@ -56,15 +56,15 @@ class InsertQueryBuilder extends QueryBuilder
                 $query.= $param.", ";
                 $bindAr[$param] = $val;
             }
-            
+
             $query = rtrim($query, ", ");
             $query.="), ";
         }
-        
+
         $query = rtrim($query, ", ");
         return ['query' => $query, 'array' => $bindAr];
     }
-    
+
     /**
      * It inserts the new rows
      *
@@ -78,36 +78,36 @@ class InsertQueryBuilder extends QueryBuilder
     {
         $qb = new QueryBuilder();
         $db = Connection::get();
-        
+
         $dataToBuild = $rows;
         $methodToCall = 'buildInsertPlaceholder';
-        
+
         if(is_array($rows) && isset($rows[0]) && is_array($rows[0])){
             $dataToBuild = $rows[0];
             $methodToCall = 'buildInsertPlaceholders';
         }
-        
+
         $query   = $this->buildInsert($table, $dataToBuild);
         $dataRet = $this->$methodToCall($rows);
         $query.= $dataRet['query'];
         $bindAr = $dataRet['array'];
-        
+
         try{
             $stmt = $db->prepare($qb->queryPrefix($query));
-            
+
             if(is_array($rows) && isset($rows[0]) && is_array($rows[0])){
                 foreach($bindAr as $param => $val){
                     $stmt->bindValue($param, $val);
                 }
-                
+
                 $stmt->execute();
-            } else{
-                $stmt->execute($bindAr);
+                return $db->lastInsertId();
             }
+
+            $stmt->execute($bindAr);
+            return $db->lastInsertId();
         } catch(Exception $e){
             throw new Exception($e->getMessage());
         }
-        
-        return $db->lastInsertId();
     }
 }
