@@ -77,6 +77,24 @@ class QueryBuilder
         return $startQuery;
     }
 
+    private function buildLimitQuery($limit, $offset, $query = array()){
+      $limitQuery = [];
+      if (!empty($limit)) {
+          $query[] = 'LIMIT';
+
+          if (!empty($offset)) {
+              $query[] = $offset.',';
+          }
+
+          $query[] = $limit;
+      }
+
+      if (count($limitQuery)) {
+          $query = array_merge($query, $limitQuery);
+      }
+      return $query;
+    }
+
     public function buildQuery(array $params)
     {
         $jqb    = new JoinQueryBuilder();
@@ -125,15 +143,7 @@ class QueryBuilder
             $query[] = $params['orderBy'];
         }
 
-        if (!empty($params['limit'])) {
-            $query[] = 'LIMIT';
-
-            if (!empty($params['offset'])) {
-                $query[] = $params['offset'].',';
-            }
-
-            $query[] = $params['limit'];
-        }
+        $query = $this->buildLimitQuery($params['limit'], $params['offset'], $query);
 
         return $query;
     }
