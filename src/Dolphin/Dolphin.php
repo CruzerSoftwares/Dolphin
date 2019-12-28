@@ -445,8 +445,20 @@ class Dolphin
      */
     public function update($row)
     {
-        $uqb = new UpdateQueryBuilder();
-        return $uqb->update($rows, $this->table);
+        $result =  (new UpdateQueryBuilder())->update(
+          $rows,
+          $this->table,
+          $this->where,
+          $this->whereRaw,
+          $this->whereIn,
+          $this->whereNotIn,
+          $this->whereNull,
+          $this->whereNotNull
+        );
+
+        $this->reset();
+
+        return $result;
     }
 
     /**

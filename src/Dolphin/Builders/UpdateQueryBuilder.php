@@ -25,9 +25,17 @@ class UpdateQueryBuilder extends QueryBuilder
      * @author RN Kushwaha <rn.kushwaha022@gmail.com>
      * @since v0.0.5
      */
-    public function update($rows, $table)
+    public function update(
+      $row,
+      $table,
+      $where,
+      $whereRaw,
+      $whereIn,
+      $whereNotIn,
+      $whereNull,
+      $whereNotNull
+    )
     {
-        $db = Connection::get();
         $wqb   = new WhereQueryBuilder();
         $query = "UPDATE ".$table." SET ";
         $ar    = array();
@@ -41,19 +49,20 @@ class UpdateQueryBuilder extends QueryBuilder
 
         try{
             $whereQuery = $wqb->buildAllWhereQuery(
-                                $this->where,
-                                $this->whereRaw,
-                                $this->whereIn,
-                                $this->whereNotIn,
-                                $this->whereNull,
-                                $this->whereNotNull
+                                $where,
+                                $whereRaw,
+                                $whereIn,
+                                $whereNotIn,
+                                $whereNull,
+                                $whereNotNull
                             );
             $query.= " ".join(" ", $whereQuery);
             $stmt = Connection::get()->prepare($this->queryPrefix($query));
             $stmt->execute($ar);
-            $this->reset();
         } catch(Exception $e){
             throw new Exception($e->getMessage());
         }
+
+        return true;
     }
 }
