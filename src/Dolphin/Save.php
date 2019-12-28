@@ -30,16 +30,15 @@ class Save extends Dolphin
           if($key == 'id') continue;
           $query.= $this->qb->quote($key)." =:".$key.",";
       }
+      $query = rtrim($query, ",");
 
       return ['ar' => $ar, 'query' => $query];
     }
     public function createQuery($row){
         $ar = [];
         if(isset($row) && isset($row->id) && $row->id > 0 ){
-            $query = "UPDATE ".$this->table." SET ";
             $mixedData = $this->buildQueryStrSingleFromArr($row);
-            $query = rtrim($mixedData['query'], ",");
-            $query.= " WHERE ".$this->qb->quote('id')."=:id";
+            $query= $mixedData['query']." WHERE ".$this->qb->quote('id')."=:id";
 
             return ['query' => $query, 'data' => $mixedData['ar']];
         }
