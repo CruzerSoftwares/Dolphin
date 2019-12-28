@@ -13,6 +13,7 @@ use Dolphin\Builders\QueryBuilder;
 use Dolphin\Builders\WhereQueryBuilder;
 use Dolphin\Builders\InsertQueryBuilder;
 use Dolphin\Builders\UpdateQueryBuilder;
+use Dolphin\Builders\DeleteQueryBuilder;
 use Dolphin\Parsers\WhereQueryParser;
 use Dolphin\Utils\Utils;
 use \Exception;
@@ -315,24 +316,10 @@ class Dolphin
 
     public function query($query, $fetchRows = 'all')
     {
-        $qb = new QueryBuilder();
+        $result = (new QueryBuilder())->query($query, $fetchRows);
+        $this->reset();
 
-        try {
-            $obj = Connection::get()->query($qb->queryPrefix($query), \PDO::FETCH_OBJ);
-
-            if ($fetchRows == 'count') {
-                $obj = $obj->fetchColumn();
-            }
-
-            // Reset class variables
-            $this->reset();
-
-            return $obj;
-        } catch (\PDOException $ex) {
-            throw new \PDOException($ex->getMessage(), 1);
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage(), 1);
-        }
+        return $result;
     }
 
     public function get()

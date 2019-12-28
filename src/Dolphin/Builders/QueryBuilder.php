@@ -95,6 +95,22 @@ class QueryBuilder
       return $query;
     }
 
+    public function query($query, $fetchRows){
+      try {
+          $obj = Connection::get()->query($this->queryPrefix($query), \PDO::FETCH_OBJ);
+
+          if ($fetchRows == 'count') {
+              $obj = $obj->fetchColumn();
+          }
+
+          return $obj;
+      } catch (\PDOException $ex) {
+          throw new \PDOException($ex->getMessage(), 1);
+      } catch (Exception $e) {
+          throw new Exception($e->getMessage(), 1);
+      }
+    }
+
     public function buildQuery(array $params)
     {
         $jqb    = new JoinQueryBuilder();
