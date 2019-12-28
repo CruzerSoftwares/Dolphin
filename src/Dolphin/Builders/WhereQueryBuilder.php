@@ -95,7 +95,7 @@ class WhereQueryBuilder extends QueryBuilder
         return $query;
     }
 
-    public function buildWhereInQuery($conditions = array(), $query = array())
+    public function buildWhereInQuery($conditions = array())
     {
         $whereInQuery = array();
 
@@ -123,13 +123,11 @@ class WhereQueryBuilder extends QueryBuilder
                 $whereInQuery[] = 'AND '.trim($whereIn[0]).' IN ('.$dataStr.')';
             }
         }
-        if (count($whereInQuery)) {
-            $query = array_merge($query, $whereInQuery);
-        }
-        return $query;
+
+        return $whereInQuery;
     }
 
-    public function buildWhereNotInQuery($conditions = array(), $query = array())
+    public function buildWhereNotInQuery($conditions = array())
     {
         $whereNotInQuery = array();
 
@@ -157,10 +155,8 @@ class WhereQueryBuilder extends QueryBuilder
                 $whereNotInQuery[] = 'AND '.trim($whereNotIn[0]).' NOT IN ('.$dataStr.')';
             }
         }
-        if (count($whereNotInQuery)) {
-            $query = array_merge($query, $whereNotInQuery);
-        }
-        return $query;
+
+        return $whereNotInQuery;
     }
 
     public function buildWhereNullQuery($conditions = array(), $query = array())
@@ -221,16 +217,25 @@ class WhereQueryBuilder extends QueryBuilder
         return $query;
     }
 
-    public function buildAllWhereQuery($where, $whereRaw, $whereIn, $whereNotIn, $whereNull, $whereNotNull)
+    public function buildAllWhereQuery($where, $whereRaw, $whereIn, $whereNotIn, $whereNull, $whereNotNull, $mainQuery = array())
     {
         $query = array();
         $query = $this->buildWhereQuery($where, $query);
         $query = $this->buildWhereRawQuery($whereRaw, $query);
-        $query = $this->buildWhereInQuery($whereIn, $query);
-        $query = $this->buildWhereNotInQuery($whereNotIn, $query);
+        $whereInQuery = $this->buildWhereInQuery($whereIn);
+        if (count($whereInQuery)) {
+            $query = array_merge($query, $whereInQuery);
+        }
+        $whereNotInQuery = $this->buildWhereNotInQuery($whereNotIn);
+        if (count($whereNotInQuery)) {
+            $query = array_merge($query, $whereNotInQuery);
+        }
         $query = $this->buildWhereNullQuery($whereNull, $query);
         $query = $this->buildWhereNotNullQuery($whereNotNull, $query);
 
-        return $query;
+        if (count($query)) {
+            $mainQuery = array_merge($mainQuery, $query);
+        }
+        return $mainQuery;
     }
 }

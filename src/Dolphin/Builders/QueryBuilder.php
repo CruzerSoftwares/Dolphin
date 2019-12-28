@@ -92,27 +92,23 @@ class QueryBuilder
         $query[] = 'FROM';
         $query[] = $this->quote($tblWithPrefix).' AS '.$this->quote($tbl);
 
-        $allJoinQuery = $jqb->buildAllJoinQuery(
+        $query = $jqb->buildAllJoinQuery(
                                 $params['join'],
                                 $params['leftJoin'],
                                 $params['rightJoin'],
-                                $params['crossJoin']
+                                $params['crossJoin'],
+                                $query
                             );
-        if (count($allJoinQuery)) {
-            $query = array_merge($query, $allJoinQuery);
-        }
 
-        $allWhereQuery = $wqb->buildAllWhereQuery(
+        $query = $wqb->buildAllWhereQuery(
                                     $params['where'],
                                     $params['whereRaw'],
                                     $params['whereIn'],
                                     $params['whereNotIn'],
                                     $params['whereNull'],
-                                    $params['whereNotNull']
+                                    $params['whereNotNull'],
+                                    $query
                                 );
-        if (count($allWhereQuery)) {
-            $query = array_merge($query, $allWhereQuery);
-        }
 
         if (!empty($params['groupBy'])) {
             $query[] = 'GROUP BY';

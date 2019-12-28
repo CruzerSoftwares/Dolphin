@@ -87,7 +87,7 @@ class JoinQueryBuilder extends QueryBuilder
         if (!count($conditions)) {
             return $query;
         }
-        
+
         foreach ($conditions as $crossJoin) {
             list($tableName, $tableAlias) = $this->addAlias($crossJoin[0]);
 
@@ -97,7 +97,7 @@ class JoinQueryBuilder extends QueryBuilder
         return $query;
     }
 
-    public function buildAllJoinQuery($join, $leftJoin, $rightJoin, $crossJoin)
+    public function buildAllJoinQuery($join, $leftJoin, $rightJoin, $crossJoin, $mainQuery = array())
     {
         $query = array();
 
@@ -120,7 +120,9 @@ class JoinQueryBuilder extends QueryBuilder
         if (count($crossJoinQuery)) {
             $query = array_merge($query, $crossJoinQuery);
         }
-
-        return $query;
+        if (count($query)) {
+            $mainQuery = array_merge($mainQuery, $query);
+        }
+        return $mainQuery;
     }
 }
