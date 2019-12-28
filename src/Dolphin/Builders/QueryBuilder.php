@@ -10,6 +10,7 @@
 namespace Dolphin\Builders;
 
 use Dolphin\Connections\Connection;
+use \Exception;
 
 /**
  * This class provides the mechanism to build the Queries.
