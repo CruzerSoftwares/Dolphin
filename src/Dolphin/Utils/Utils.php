@@ -14,7 +14,7 @@ class Utils
     public function decamelize($string) {
         return strtolower(preg_replace(['/([a-z\d])([A-Z])/', '/([^_])([A-Z][a-z])/'], '$1_$2', $string));
     }
-    
+
     /**
      * Turn the stadClass object to the type of calling Model
      *
@@ -31,16 +31,16 @@ class Utils
         if(!is_object($sourceObject)){
             return $destination;
         }
-        
+
         $sourceReflection = new \ReflectionObject($sourceObject);
         $destinationReflection = new \ReflectionObject($destination);
         $sourceProperties = $sourceReflection->getProperties();
-        
+
         foreach ($sourceProperties as $sourceProperty) {
             $sourceProperty->setAccessible(true);
             $name = $sourceProperty->getName();
             $value = $sourceProperty->getValue($sourceObject);
-            
+
             if ($destinationReflection->hasProperty($name)) {
                 $propDest = $destinationReflection->getProperty($name);
                 $propDest->setAccessible(true);
@@ -49,10 +49,10 @@ class Utils
                 $destination->$name = $value;
             }
         }
-        
+
         return $destination;
     }
-    
+
      /**
      * Turn the stadClass object to the type of calling Model
      *
@@ -66,7 +66,7 @@ class Utils
     public function turnObjects($destination, $data)
     {
         $destination = new $destination();
-        if(count($data)){
+        if((!is_null($data)) && count($data)){
             $destination->data = json_decode(json_encode($data, true));
         }
 

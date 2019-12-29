@@ -3,7 +3,6 @@
  * The Query builder API.
  *
  * @author RN Kushwaha <rn.kushwaha022@gmail.com>
- *
  * @since v0.0.1 <Date: 16th April, 2019>
  */
 
@@ -64,6 +63,7 @@ class QueryBuilder
 
         return '`'.$field.'`';
     }
+
     public function enclose($field)
     {
         return "'".$field."'";

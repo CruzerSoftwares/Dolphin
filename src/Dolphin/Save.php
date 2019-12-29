@@ -22,7 +22,7 @@ class Save extends Dolphin
         $this->qb = new QueryBuilder();
     }
 
-    public function buildQueryStrSingleFromArr($row = array()){
+    public function buildQueryStrSingleFromArr($row = []){
       $ar = [];
       $query = "UPDATE ".$this->table." SET ";
       foreach($row as $key => $val){
@@ -66,7 +66,7 @@ class Save extends Dolphin
      * @author RN Kushwaha <rn.kushwaha022@gmail.com>
      * @since v0.0.5
      */
-    public function save($object)
+    public function save($object): bool
     {
         $util = new Utils();
         $row = $util->turnObject($this->className, $object);

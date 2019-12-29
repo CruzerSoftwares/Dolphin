@@ -30,7 +30,7 @@ class InsertQueryBuilder extends QueryBuilder
     }
 
     private function buildInsertPlaceholder($rows){
-        $ar = array();
+        $ar = [];
         $query = "(";
 
         foreach($rows as $key => $val){
@@ -45,7 +45,7 @@ class InsertQueryBuilder extends QueryBuilder
     }
 
     private function buildInsertPlaceholders($rows){
-        $bindAr = array();
+        $bindAr = [];
         $query = "";
 
         foreach($rows as $i => $row){
@@ -64,7 +64,7 @@ class InsertQueryBuilder extends QueryBuilder
         return ['query' => $query, 'array' => $bindAr];
     }
 
-    private function checkMultipleInsert($rows = array()){
+    private function checkMultipleInsert($rows = []){
       return is_array($rows) && isset($rows[0]) && is_array($rows[0]);
     }
     /**

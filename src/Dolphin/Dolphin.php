@@ -14,8 +14,7 @@ use Dolphin\Builders\WhereQueryBuilder;
 use Dolphin\Builders\InsertQueryBuilder;
 use Dolphin\Builders\UpdateQueryBuilder;
 use Dolphin\Builders\DeleteQueryBuilder;
-use Dolphin\Parsers\WhereQueryParser;
-use Dolphin\Utils\Utils;
+use Dolphin\Builders\PrepareQueryBuilder;
 use \Exception;
 
 /**
@@ -54,22 +53,22 @@ use \Exception;
  */
 class Dolphin
 {
-    protected $fields = array();
+    protected $fields = [];
     public $table;
     public $className;
     protected $groupBy;
     protected $orderBy;
     protected $having;
-    protected $join = array();
-    protected $leftJoin = array();
-    protected $rightJoin = array();
-    protected $crossJoin = array();
-    protected $where = array();
-    protected $whereRaw = array();
-    protected $whereIn = array();
-    protected $whereNotIn = array();
-    protected $whereNull = array();
-    protected $whereNotNull = array();
+    protected $join = [];
+    protected $leftJoin = [];
+    protected $rightJoin = [];
+    protected $crossJoin = [];
+    protected $where = [];
+    protected $whereRaw = [];
+    protected $whereIn = [];
+    protected $whereNotIn = [];
+    protected $whereNull = [];
+    protected $whereNotNull = [];
     protected $limit;
     protected $offset;
     protected $results;
@@ -137,7 +136,6 @@ class Dolphin
     {
         $args = func_get_args();
         $noOfArgs = func_num_args();
-
         $this->validateArgsCount($noOfArgs);
 
         if($noOfArgs===2){
@@ -149,14 +147,14 @@ class Dolphin
         return $this;
     }
 
-    public function whereIn($whereIn, $params = array())
+    public function whereIn($whereIn, $params = [])
     {
         $this->whereIn = array_merge($this->whereIn, [[$whereIn, $params]]);
 
         return $this;
     }
 
-    public function whereNotIn($whereNotIn, $params = array())
+    public function whereNotIn($whereNotIn, $params = [])
     {
         $this->whereNotIn = array_merge($this->whereNotIn, [[$whereNotIn, $params]]);
 
@@ -250,57 +248,34 @@ class Dolphin
 
     protected function reset()
     {
-        $this->fields = array();
+        $this->fields = [];
         $this->table = null;
         $this->className = null;
         $this->groupBy = null;
         $this->orderBy = null;
         $this->having = null;
-        $this->join = array();
-        $this->leftJoin = array();
-        $this->rightJoin = array();
-        $this->crossJoin = array();
-        $this->where = array();
-        $this->whereRaw = array();
-        $this->whereIn = array();
-        $this->whereNotIn = array();
-        $this->whereNull = array();
-        $this->whereNotNull = array();
+        $this->join = [];
+        $this->leftJoin = [];
+        $this->rightJoin = [];
+        $this->crossJoin = [];
+        $this->where = [];
+        $this->whereRaw = [];
+        $this->whereIn = [];
+        $this->whereNotIn = [];
+        $this->whereNull = [];
+        $this->whereNotNull = [];
         $this->limit = null;
         $this->offset = null;
     }
 
     public function prepare($query, $fetchRows = 'all')
     {
-        $qb   = new QueryBuilder();
-        $wqp  = new WhereQueryParser();
-        $util = new Utils();
-        $rows = null;
+        $results = (new PrepareQueryBuilder())->prepare($this->where, $this->className, $query, $fetchRows);
 
-        try {
-            $ar = $wqp->parseWhereQuery($this->where);
-            $stmt = Connection::get()->prepare($qb->queryPrefix($query));
-            $stmt->execute($ar);
+        $this->results = $results;
+        $this->reset();
 
-            if ($fetchRows == 'first') {
-                $this->results = $stmt->fetch(\PDO::FETCH_OBJ);
-            } else{
-                $this->results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-            }
-
-            if(count($this->results) ){
-              // now turn this stdClass object to the object type of calling model
-              $rows = $util->turnObjects($this->className, $this->results);
-            }
-            // Reset class variables
-            $this->reset();
-
-            return $rows;
-        } catch (\PDOException $ex) {
-            throw new \PDOException($ex->getMessage(), 1);
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage(), 1);
-        }
+        return $results;
     }
 
     public function query($query, $fetchRows = 'all')

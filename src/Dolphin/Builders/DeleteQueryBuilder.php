@@ -12,18 +12,18 @@ use Dolphin\Connections\Connection;
 use Exception;
 
 /**
- * This class provides the mechanism to build the Insert Queries.
+ * This class provides the mechanism to build the Delete Queries.
  */
 class DeleteQueryBuilder extends QueryBuilder
 {
     /**
-     * It inserts the new rows
+     * It deletes the matching rows
      *
      * @param array $rows
      * @return boolean
      * @throws Exception
      * @author RN Kushwaha <rn.kushwaha022@gmail.com>
-     * @since v0.0.5
+     * @since v0.0.8
      */
     public function delete(
       $table,
@@ -33,7 +33,7 @@ class DeleteQueryBuilder extends QueryBuilder
       $whereNotIn,
       $whereNull,
       $whereNotNull
-    )
+    ): bool
     {
         $wqb = new WhereQueryBuilder();
         $query = "DELETE FROM ".$table;

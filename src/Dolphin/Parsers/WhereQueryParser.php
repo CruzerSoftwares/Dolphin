@@ -14,7 +14,7 @@ class WhereQueryParser
 {
 
     protected function prepareArrayForWhere($bindKey, $bindVal = null){
-        $ar = $conditionAr = array();
+        $ar = $conditionAr = [];
         // expecting a string like 'status = :status'
         if ($this->checkWherePrepareUsed($bindKey)) {
             $conditionAr = preg_split('/:/', $bindKey);
@@ -30,7 +30,10 @@ class WhereQueryParser
 
     public function parseWhereQuery($whereQuery = [])
     {
-        $ar = array();
+        $ar = [];
+        if(!count($whereQuery)){
+          return $ar;
+        }
 
         foreach ($whereQuery as $where) {
             if (is_array($where[1])) {

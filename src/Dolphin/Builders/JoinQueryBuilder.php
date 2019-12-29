@@ -1,6 +1,6 @@
 <?php
 /**
- * The Query builder API.
+ * The JOIN Query builder API.
  *
  * @author RN Kushwaha <rn.kushwaha022@gmail.com>
  * @since v0.0.1 <Date: 16th April, 2019>
@@ -9,14 +9,14 @@
 namespace Dolphin\Builders;
 
 /**
- * This class provides the mechanism to build the Where Queries.
+ * This class provides the mechanism to build the Join Queries.
  */
 class JoinQueryBuilder extends QueryBuilder
 {
-    public function buildJoinQuery($conditions = array())
+    public function buildJoinQuery($conditions = [])
     {
         $prefix = $this->getPrefix();
-        $query = array();
+        $query = [];
 
         if (!count($conditions)) {
             return $query;
@@ -35,10 +35,10 @@ class JoinQueryBuilder extends QueryBuilder
         return $query;
     }
 
-    public function buildLeftJoinQuery($conditions = array())
+    public function buildLeftJoinQuery($conditions = [])
     {
         $prefix = $this->getPrefix();
-        $query = array();
+        $query = [];
 
         if (!count($conditions)) {
             return $query;
@@ -57,10 +57,10 @@ class JoinQueryBuilder extends QueryBuilder
         return $query;
     }
 
-    public function buildRightJoinQuery($conditions = array())
+    public function buildRightJoinQuery($conditions = [])
     {
         $prefix = $this->getPrefix();
-        $query = array();
+        $query = [];
 
         if (!count($conditions)) {
             return $query;
@@ -79,10 +79,10 @@ class JoinQueryBuilder extends QueryBuilder
         return $query;
     }
 
-    public function buildCrossJoinQuery($conditions = array())
+    public function buildCrossJoinQuery($conditions = [])
     {
         $prefix = $this->getPrefix();
-        $query = array();
+        $query = [];
 
         if (!count($conditions)) {
             return $query;
@@ -97,9 +97,9 @@ class JoinQueryBuilder extends QueryBuilder
         return $query;
     }
 
-    public function buildAllJoinQuery($join, $leftJoin, $rightJoin, $crossJoin, $mainQuery = array())
+    public function buildAllJoinQuery($join, $leftJoin, $rightJoin, $crossJoin, $mainQuery = [])
     {
-        $query = array();
+        $query = [];
 
         $joinQuery = $this->buildJoinQuery($join);
         if (count($joinQuery)) {

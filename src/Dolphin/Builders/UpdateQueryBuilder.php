@@ -12,18 +12,18 @@ use Dolphin\Connections\Connection;
 use \Exception;
 
 /**
- * This class provides the mechanism to build the Insert Queries.
+ * This class provides the mechanism to build the update Queries.
  */
 class UpdateQueryBuilder extends QueryBuilder
 {
     /**
-     * It inserts the new rows
+     * It updates the matching rows
      *
      * @param array $rows
      * @return boolean
      * @throws Exception
      * @author RN Kushwaha <rn.kushwaha022@gmail.com>
-     * @since v0.0.5
+     * @since v0.0.8
      */
     public function update(
       $row,
@@ -34,11 +34,11 @@ class UpdateQueryBuilder extends QueryBuilder
       $whereNotIn,
       $whereNull,
       $whereNotNull
-    )
+    ): bool
     {
         $wqb   = new WhereQueryBuilder();
         $query = "UPDATE ".$table." SET ";
-        $ar    = array();
+        $ar    = [];
 
         foreach($row as $key => $val){
             $ar[':'.$key] = $val;
