@@ -13,7 +13,7 @@ namespace Dolphin\Parsers;
 class WhereQueryParser
 {
 
-    protected function prepareArrayForWhere($bindKey, $bindVal = null){
+    protected function prepareArrayForWhere($bindKey, $bindVal = null, $mainAr = []){
         $ar = $conditionAr = [];
         // expecting a string like 'status = :status'
         if ($this->checkWherePrepareUsed($bindKey)) {
@@ -25,7 +25,11 @@ class WhereQueryParser
             $ar[':'.$conditionAr[1]] = $bindVal;
         }
 
-        return $ar;
+        if (count($ar)) {
+            $mainAr = array_merge($mainAr, $ar);
+        }
+
+        return $mainAr;
     }
 
     public function parseWhereQuery($whereQuery = [])
@@ -41,10 +45,7 @@ class WhereQueryParser
                     $ar[':'.$key] = $value;
                 }
             } elseif ($where[1] != '') {
-                $arNext = $this->prepareArrayForWhere($where[0], $where[1]);
-                if (count($arNext)) {
-                    $ar = array_merge($ar, $arNext);
-                }
+                $ar = $this->prepareArrayForWhere($where[0], $where[1], $ar);
             }
         }
 
