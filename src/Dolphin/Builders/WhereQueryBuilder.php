@@ -54,15 +54,16 @@ class WhereQueryBuilder extends QueryBuilder
 
         foreach ($conditions as $where) {
             $sign = '=';
+            $whereQueryPart = 'AND ';
             if(count($where)==3) {
                 $sign = $where[1];
             }
+
             if ($firstTime) {
-                $whereQuery[] = $this->qb->quote(trim($where[0])).' '.$sign.' '.$this->qb->enclose(end($where));
+                $whereQueryPart = '';
                 $firstTime = false;
-            } else {
-                $whereQuery[] = 'AND '.$this->qb->quote(trim($where[0])).' '.$sign.' '.$this->qb->enclose(end($where));
             }
+            $whereQuery[] = $whereQueryPart.$this->qb->quote(trim($where[0])).' '.$sign.' '.$this->qb->enclose(end($where));
         }
 
         return $whereQuery;
@@ -83,12 +84,12 @@ class WhereQueryBuilder extends QueryBuilder
         }
 
         foreach ($conditions as $whereRaw) {
+            $whereRawQueryPart = 'AND ';
             if ($firstTime === true) {
-                $whereRawQuery[] = $whereRaw;
+                $whereRawQueryPart = '';
                 $firstTime = false;
-            } else {
-                $whereRawQuery[] = 'AND '.$whereRaw;
             }
+            $whereRawQuery[] = $whereRawQueryPart.$whereRaw;
         }
 
         if (count($whereRawQuery)) {
@@ -114,16 +115,17 @@ class WhereQueryBuilder extends QueryBuilder
 
         foreach ($conditions as $whereIn) {
             $dataStr = $this->buildWhereInClauseQuery($whereIn[1]);
+            $whereInQueryPart = 'AND ';
             if ($dataStr === null) {
                 continue;
             }
 
             if ($firstTime) {
-                $whereInQuery[] = trim($whereIn[0]).' IN ('.$dataStr.')';
+                $whereInQueryPart = '';
                 $firstTime = false;
-            } else {
-                $whereInQuery[] = 'AND '.trim($whereIn[0]).' IN ('.$dataStr.')';
             }
+
+            $whereInQuery[] = $whereInQueryPart.trim($whereIn[0]).' IN ('.$dataStr.')';
         }
 
         return $whereInQuery;
@@ -146,16 +148,17 @@ class WhereQueryBuilder extends QueryBuilder
 
         foreach ($conditions as $whereNotIn) {
             $dataStr = $this->buildWhereInClauseQuery($whereNotIn[1]);
+            $whereNotInQueryPart = 'AND ';
             if ($dataStr === null) {
                 continue;
             }
 
             if ($firstTime) {
-                $whereNotInQuery[] = trim($whereNotIn[0]).' NOT IN ('.$dataStr.')';
+                $whereNotInQueryPart = '';
                 $firstTime = false;
-            } else {
-                $whereNotInQuery[] = 'AND '.trim($whereNotIn[0]).' NOT IN ('.$dataStr.')';
             }
+
+            $whereNotInQuery[] =  $whereNotInQueryPart.trim($whereNotIn[0]).' NOT IN ('.$dataStr.')';
         }
 
         return $whereNotInQuery;
@@ -177,12 +180,13 @@ class WhereQueryBuilder extends QueryBuilder
         }
 
         foreach ($conditions as $whereNull) {
+            $whereNullQueryPart = 'AND ';
             if ($firstTime) {
-                $whereNullQuery[] = trim($whereNull).' IS NULL';
+                $whereNullQueryPart = '';
                 $firstTime = false;
-            } else {
-                $whereNullQuery[] = 'AND '.trim($whereNull).' IS NULL';
             }
+
+            $whereNullQuery[] = $whereNullQueryPart.trim($whereNull).' IS NULL';
         }
         if (count($whereNullQuery)) {
             $query = array_merge($query, $whereNullQuery);
@@ -206,12 +210,13 @@ class WhereQueryBuilder extends QueryBuilder
         }
 
         foreach ($conditions as $whereNotNull) {
+            $whereNotNullQueryPart = 'AND ';
             if ($firstTime) {
-                $whereNotNullQuery[] = trim($whereNotNull).' IS NOT NULL';
                 $firstTime = false;
-            } else {
-                $whereNotNullQuery[] = 'AND '.trim($whereNotNull).' IS NOT NULL';
+                $whereNotNullQueryPart = '';
             }
+
+            $whereNotNullQuery[] = $whereNotNullQueryPart.trim($whereNotNull).' IS NOT NULL';
         }
         if (count($whereNotNullQuery)) {
             $query = array_merge($query, $whereNotNullQuery);
