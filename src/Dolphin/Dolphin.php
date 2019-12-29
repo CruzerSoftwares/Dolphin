@@ -75,16 +75,7 @@ class Dolphin
     protected $results;
 
     private function getFields(array $args, bool $quote = true){
-        $fldAr = array();
-        $qb = new QueryBuilder();
-
-        foreach ($args as $arg) {
-            foreach (explode(',', $arg) as $ar) {
-                $fldAr[] = ($quote === true) ? $qb->quote(trim($ar)) : trim($ar);
-            }
-        }
-
-        return $fldAr;
+        return (new QueryBuilder())->getFields($args, $quote);
     }
 
     private function validateArgsCount($noOfArgs){
@@ -234,9 +225,7 @@ class Dolphin
      */
     protected function buildQuery()
     {
-        $qb     = new QueryBuilder();
-
-        $query  = $qb->buildQuery([
+        $query  = (new QueryBuilder())->buildQuery([
             'table' => $this->table,
             'fields' => $this->fields,
             'join' => $this->join,
@@ -368,7 +357,6 @@ class Dolphin
     public function findOrFail($id)
     {
         $this->where('id', $id);
-
         $row = $this->first();
 
         if($row == null ){

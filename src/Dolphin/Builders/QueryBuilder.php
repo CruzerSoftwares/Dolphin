@@ -49,7 +49,7 @@ class QueryBuilder
 
         if (stripos($tableName, ' as ') > 0) {
             $tblName = explode(' as ', $tableName);
-            $tableAlias = ' AS '.self::quote($tblName[1]);
+            $tableAlias = ' AS '.$this->quote($tblName[1]);
             $tableName = $tblName[0];
         }
 
@@ -78,7 +78,7 @@ class QueryBuilder
         return $startQuery;
     }
 
-    private function buildLimitQuery($limit, $offset, $query = array()){
+    private function buildLimitQuery($limit, $offset, $query = []){
       $limitQuery = [];
       if (!empty($limit)) {
           $query[] = 'LIMIT';
@@ -163,5 +163,17 @@ class QueryBuilder
         $query = $this->buildLimitQuery($params['limit'], $params['offset'], $query);
 
         return $query;
+    }
+
+    public function getFields(array $args, bool $quote = true): array{
+        $fldAr = [];
+
+        foreach ($args as $arg) {
+            foreach (explode(',', $arg) as $ar) {
+                $fldAr[] = ($quote === true) ? $this->quote(trim($ar)) : trim($ar);
+            }
+        }
+
+        return $fldAr;
     }
 }
