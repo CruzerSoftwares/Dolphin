@@ -25,14 +25,18 @@ class WhereQueryBuilder extends QueryBuilder
     {
         if (is_int($terms[0])) {
             $dataStr = join(',', $terms);
+            return $dataStr;
         } elseif (is_string($terms[0])) {
             $dataStr = join("', '", $terms);
             $dataStr = "'".$dataStr."'";
-        } else {
-            return null;
+            return $dataStr;
         }
 
-        return $dataStr;
+        return null;
+    }
+
+    private function whereAddedCondition($conditions = array()){
+      return $this->whereAdded === false && count($conditions);
     }
 
     public function buildWhereQuery($conditions = array())
@@ -43,7 +47,7 @@ class WhereQueryBuilder extends QueryBuilder
         }
 
         $firstTime = true;
-        if ($this->whereAdded === false && count($conditions)) {
+        if ($this->whereAddedCondition($conditions)) {
           $whereQuery[] = 'WHERE';
           $this->whereAdded = true;
         }
@@ -61,9 +65,7 @@ class WhereQueryBuilder extends QueryBuilder
             }
         }
 
-        if (count($whereQuery)) {
-            return $whereQuery;
-        }
+        return $whereQuery;
     }
 
     public function buildWhereRawQuery($conditions = array(), $query = array())
@@ -75,7 +77,7 @@ class WhereQueryBuilder extends QueryBuilder
         }
 
         $firstTime = true;
-        if ($this->whereAdded === false && count($conditions)) {
+        if ($this->whereAddedCondition($conditions)) {
             $whereRawQuery[] = 'WHERE';
             $this->whereAdded = true;
         }
@@ -219,7 +221,6 @@ class WhereQueryBuilder extends QueryBuilder
 
     public function buildAllWhereQuery($where, $whereRaw, $whereIn, $whereNotIn, $whereNull, $whereNotNull, $mainQuery = array())
     {
-        $query = array();
         $query = $this->buildWhereQuery($where);
         $query = $this->buildWhereRawQuery($whereRaw, $query);
         $whereInQuery = $this->buildWhereInQuery($whereIn);
