@@ -299,14 +299,17 @@ class Dolphin
             $query .= ' LIMIT 1';
         }
 
-        return $this->prepare($query, 'first');
+        $result = $this->prepare($query, 'first');
+
+        return isset($result->data) ? $result->data : '';
     }
 
     public function all()
     {
         $query = $this->buildQuery();
+        $result = $this->prepare($query);
 
-        return $this->prepare($query);
+        return isset($result->data) ? $result->data : '';
     }
 
     /**
