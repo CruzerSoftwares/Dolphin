@@ -21,7 +21,7 @@ class WhereQueryBuilder extends QueryBuilder
         $this->qb = new QueryBuilder();
     }
 
-    private function buildWhereInClauseQuery($terms = array())
+    private function buildWhereInClauseQuery($terms = [])
     {
         if (is_int($terms[0])) {
             $dataStr = join(',', $terms);
@@ -35,15 +35,15 @@ class WhereQueryBuilder extends QueryBuilder
         return null;
     }
 
-    private function whereAddedCondition($conditions = array()){
+    private function whereAddedCondition($conditions = []){
       return $this->whereAdded === false && count($conditions);
     }
 
-    public function buildWhereQuery($conditions = array())
+    public function buildWhereQuery($conditions = [])
     {
-        $whereQuery = array();
+        $whereQuery = [];
         if (count($conditions)<=0) {
-            return array();
+            return [];
         }
 
         $firstTime = true;
@@ -69,9 +69,9 @@ class WhereQueryBuilder extends QueryBuilder
         return $whereQuery;
     }
 
-    public function buildWhereRawQuery($conditions = array(), $query = array())
+    public function buildWhereRawQuery($conditions = [], $query = [])
     {
-        $whereRawQuery = array();
+        $whereRawQuery = [];
 
         if (count($conditions)<=0) {
             return $query;
@@ -98,75 +98,52 @@ class WhereQueryBuilder extends QueryBuilder
         return $query;
     }
 
-    public function buildWhereInQuery($conditions = array())
+    private function buildWhereInNotInQuery($conditions = [], $queryParam='IN')
     {
-        $whereInQuery = array();
+        $query = [];
 
         if (count($conditions)<=0) {
-            return array();
+            return $query;
         }
 
         $firstTime = false;
         if ($this->whereAdded === false) {
-            $whereInQuery[] = 'WHERE';
+            $query[] = 'WHERE';
             $firstTime = true;
             $this->whereAdded = true;
         }
 
         foreach ($conditions as $whereIn) {
             $dataStr = $this->buildWhereInClauseQuery($whereIn[1]);
-            $whereInQueryPart = 'AND ';
+            $queryPart = 'AND ';
             if ($dataStr === null) {
                 continue;
             }
 
             if ($firstTime) {
-                $whereInQueryPart = '';
+                $queryPart = '';
                 $firstTime = false;
             }
 
-            $whereInQuery[] = $whereInQueryPart.trim($whereIn[0]).' IN ('.$dataStr.')';
+            $query[] = $queryPart.trim($whereIn[0]).' '.$queryParam.' ('.$dataStr.')';
         }
 
-        return $whereInQuery;
+        return $query;
     }
 
-    public function buildWhereNotInQuery($conditions = array())
+    public function buildWhereInQuery($conditions = [])
     {
-        $whereNotInQuery = array();
-
-        if (count($conditions)<=0) {
-            return array();
-        }
-
-        $firstTime = false;
-        if ($this->whereAdded === false) {
-            $whereNotInQuery[] = 'WHERE';
-            $firstTime = true;
-            $this->whereAdded = true;
-        }
-
-        foreach ($conditions as $whereNotIn) {
-            $dataStr = $this->buildWhereInClauseQuery($whereNotIn[1]);
-            $whereNotInQueryPart = 'AND ';
-            if ($dataStr === null) {
-                continue;
-            }
-
-            if ($firstTime) {
-                $whereNotInQueryPart = '';
-                $firstTime = false;
-            }
-
-            $whereNotInQuery[] =  $whereNotInQueryPart.trim($whereNotIn[0]).' NOT IN ('.$dataStr.')';
-        }
-
-        return $whereNotInQuery;
+        return $this->buildWhereInNotInQuery($conditions, 'IN');
     }
 
-    public function buildWhereNullQuery($conditions = array(), $query = array())
+    public function buildWhereNotInQuery($conditions = [])
     {
-        $whereNullQuery = array();
+        return $this->buildWhereInNotInQuery($conditions, 'NOT IN');
+    }
+
+    private function buildWhereNullNotNullQuery($conditions = [], $query = [], $queryParam = 'IS NULL')
+    {
+        $whereQuery = [];
 
         if (count($conditions)<=0) {
             return $query;
@@ -174,57 +151,37 @@ class WhereQueryBuilder extends QueryBuilder
 
         $firstTime = false;
         if ($this->whereAdded === false) {
-            $whereNullQuery[] = 'WHERE';
+            $whereQuery[] = 'WHERE';
             $firstTime = true;
             $this->whereAdded = true;
         }
 
         foreach ($conditions as $whereNull) {
-            $whereNullQueryPart = 'AND ';
+            $whereQueryPart = 'AND ';
             if ($firstTime) {
-                $whereNullQueryPart = '';
+                $whereQueryPart = '';
                 $firstTime = false;
             }
 
-            $whereNullQuery[] = $whereNullQueryPart.trim($whereNull).' IS NULL';
+            $whereQuery[] = $whereQueryPart.trim($whereNull).' '.$queryParam;
         }
-        if (count($whereNullQuery)) {
-            $query = array_merge($query, $whereNullQuery);
+        if (count($whereQuery)) {
+            $query = array_merge($query, $whereQuery);
         }
         return $query;
     }
 
-    public function buildWhereNotNullQuery($conditions = array(), $query = array())
+    public function buildWhereNullQuery($conditions = [], $query = [])
     {
-        $whereNotNullQuery = array();
-
-        if (count($conditions)<=0) {
-            return $query;
-        }
-
-        $firstTime = false;
-        if ($this->whereAdded === false) {
-            $whereNotNullQuery[] = 'WHERE';
-            $firstTime = true;
-            $this->whereAdded = true;
-        }
-
-        foreach ($conditions as $whereNotNull) {
-            $whereNotNullQueryPart = 'AND ';
-            if ($firstTime) {
-                $firstTime = false;
-                $whereNotNullQueryPart = '';
-            }
-
-            $whereNotNullQuery[] = $whereNotNullQueryPart.trim($whereNotNull).' IS NOT NULL';
-        }
-        if (count($whereNotNullQuery)) {
-            $query = array_merge($query, $whereNotNullQuery);
-        }
-        return $query;
+        return $this->buildWhereNullNotNullQuery($conditions, $query, 'IS NULL');
     }
 
-    public function buildAllWhereQuery($where, $whereRaw, $whereIn, $whereNotIn, $whereNull, $whereNotNull, $mainQuery = array())
+    public function buildWhereNotNullQuery($conditions = [], $query = [])
+    {
+        return $this->buildWhereNullNotNullQuery($conditions, $query, 'IS NOT NULL');
+    }
+
+    public function buildAllWhereQuery($where, $whereRaw, $whereIn, $whereNotIn, $whereNull, $whereNotNull, $mainQuery = [])
     {
         $query = $this->buildWhereQuery($where);
         $query = $this->buildWhereRawQuery($whereRaw, $query);
